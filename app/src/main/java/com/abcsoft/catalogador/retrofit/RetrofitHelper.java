@@ -15,11 +15,13 @@ import java.util.Date;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class RetrofitHelper {
 
     private static final String REST_URL = "https://openlibrary.org/";
     private static final Retrofit retrofit;
+    private static final Retrofit retrofitsc;
 
     static {
 
@@ -49,6 +51,13 @@ public class RetrofitHelper {
                 .baseUrl(REST_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
+
+        retrofitsc = new Retrofit.Builder()
+                .baseUrl(REST_URL)
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .build();
+
+
 //        RestAdapter retrofit = new RestAdapter.Builder()
 //                .setEndpoint(REST_URL)
 //                .build();
@@ -61,6 +70,10 @@ public class RetrofitHelper {
 
     public static BooksAPI getBooksAPI() {
         return retrofit.create(BooksAPI.class);
+    }
+
+    public static BooksAPI getBooksAPIsc() {
+        return retrofitsc.create(BooksAPI.class);
     }
 
 

@@ -13,9 +13,13 @@ public interface BooksAPI {
     @GET("api/books")
     Call<Book> getBook(@QueryMap Map<String, String> params);
 
+    @GET("api/books")
+    Call<String> getRAW(@QueryMap Map<String, String> params);
+
+
 }
 
 
-//    @GET("api/camareros")
+//    @GET("api/books")
 //    Call<Book> getLibro();
 //    void getMyThing(@QueryMap Map<String, String> params, new Callback<String> callback);

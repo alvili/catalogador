@@ -13,7 +13,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent intent = new Intent(this, BookDetails.class);
+        Intent intent = new Intent(this, BookDetailsActivity.class);
+        intent.putExtra("isbn", "9788408085614" );
         startActivity(intent);
 
     }
