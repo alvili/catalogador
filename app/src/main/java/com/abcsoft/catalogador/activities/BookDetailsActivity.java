@@ -11,6 +11,7 @@ import com.abcsoft.catalogador.R;
 import com.abcsoft.catalogador.modelo.Book;
 import com.abcsoft.catalogador.retrofit.BooksAPI;
 import com.abcsoft.catalogador.retrofit.RetrofitHelper;
+import com.abcsoft.catalogador.services.BooksServicesSQLite;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
@@ -24,13 +25,12 @@ import retrofit2.Response;
 public class BookDetailsActivity extends AppCompatActivity {
 
     private BooksAPI jsonPlaceHolderApi_books;
+    private BooksServicesSQLite bookServices;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bookdetails);
-
-        //lista = (ListView) findViewById(R.id.idMiLista);
 
         jsonPlaceHolderApi_books = RetrofitHelper.getBooksAPIsc();
 
@@ -43,45 +43,7 @@ public class BookDetailsActivity extends AppCompatActivity {
             getRaw(b.getString("isbn"));
         }
 
-//        getBook("9788408085614");
-//        getRaw("9788408085614");
-
     }
-
-//    private void getBook(String isbn){
-//
-//        Map<String, String> params = new HashMap<String, String>();
-//        params.put("bibkeys", "ISBN:" + isbn );
-//        params.put("jscmd", "data");
-//        params.put("format", "json");
-//
-//        Call<Book> call = jsonPlaceHolderApi_books.getBook(params);
-//
-//        call.enqueue(new Callback<Book>() {
-//
-//            @Override
-//            public void onResponse(Call<Book> call, Response<Book> response) {
-//
-//                if (!response.isSuccessful()){
-//                    //???
-//                    return;
-//                }
-//
-//                //Recupero los datos e inflo la vista
-//                Book book = response.body();
-////                lista.setAdapter(new CamareroListAdapter(getApplicationContext(), camareros));
-//                Log.d("**","Ok!!!!!");
-//
-//            }
-//
-//            @Override
-//            public void onFailure(Call<Book> call, Throwable t) {
-//                //???
-//                Log.d("**","Error!!!");
-//            }
-//        });
-//
-//    }
 
 
     private void getRaw(final String isbn){
@@ -113,6 +75,8 @@ public class BookDetailsActivity extends AppCompatActivity {
                 Gson gson = new Gson();
                 Book bookinfo = new Gson().fromJson(raw, Book.class);
 
+                bookinfo.setIsbncode(isbn);
+
                 //Preparo la vista
                 TextView title = findViewById(R.id.idTitle);
                 TextView year = findViewById(R.id.idYear);
@@ -126,6 +90,10 @@ public class BookDetailsActivity extends AppCompatActivity {
                 author.setText(bookinfo.getIsbn().getAuthors().get(0).getName());
                 Picasso.get().load(bookinfo.getIsbn().getCover().getLarge()).into(cover);
 
+                //Añado a la bbdd
+                bookServices = new BooksServicesSQLite(getApplicationContext());
+                bookServices.create(bookinfo);
+
             }
 
             @Override
@@ -136,6 +104,5 @@ public class BookDetailsActivity extends AppCompatActivity {
         });
 
     }
-
 
 }

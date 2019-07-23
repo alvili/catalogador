@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">catalogador</string>
+    <string name="catalogo">Catálogo</string>
+    <string name="scan">Escanear código</string>
 </resources>
