@@ -16,7 +16,7 @@ public class BooksAdapter extends BaseAdapter {
     private List<Book> books;
     private LayoutInflater inflater;
 
-    public CountriesAdapters(Context context, List <Book> books){
+    public BooksAdapter(Context context, List <Book> books){
         this.books = books;
         inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
     }

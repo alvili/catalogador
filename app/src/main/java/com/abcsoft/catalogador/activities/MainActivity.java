@@ -24,8 +24,7 @@ public class MainActivity extends AppCompatActivity {
         escanear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, BookDetailsActivity.class);
-                intent.putExtra("isbn", "9788408085614" );
+                Intent intent = new Intent(MainActivity.this, ScannerActivity.class);
                 startActivity(intent);
             }
         });

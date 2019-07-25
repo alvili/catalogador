@@ -12,6 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".activities.BookDetailsActivity" />
+        <activity android:name=".activities.ListViewActivity" />
+        <activity android:name=".activities.ScannerActivity" />
         <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

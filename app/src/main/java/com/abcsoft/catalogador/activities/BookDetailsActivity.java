@@ -32,15 +32,16 @@ public class BookDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bookdetails);
 
-        jsonPlaceHolderApi_books = RetrofitHelper.getBooksAPIsc();
-
         //Recogemos los datos enviados por el intent
         Intent intent = getIntent();
         Bundle b = intent.getExtras();
 
         //Solo si bundle no es null
         if(b != null){
-            getRaw(b.getString("isbn"));
+            jsonPlaceHolderApi_books = RetrofitHelper.getBooksAPIsc();
+//            getRaw(b.getString("isbn"));     // Los datos se pierden
+            getRaw("9788408085614");
+
         }
 
     }

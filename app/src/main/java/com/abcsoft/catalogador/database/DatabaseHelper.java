@@ -52,8 +52,9 @@ import java.util.List;
     public void onCreate(SQLiteDatabase db) {
 
         StringBuilder strSQL = new StringBuilder();
+        //Revisar la estructura
         strSQL.append("CREATE TABLE ").append(TABLE_NAME).append(" (")
-                .append(COL_0_TAG).append(" ").append(COL_0_TYPE).append(" PRIMARY KEY AUTOINCREMENT, ")
+                .append(COL_0_TAG).append(" ").append(COL_0_TYPE).append(" PRIMARY KEY, ") //.append(" PRIMARY KEY AUTOINCREMENT, ")
                 .append(COL_1_TAG).append(" ").append(COL_1_TYPE).append(" NOT NULL, ")
                 .append(COL_2_TAG).append(" ").append(COL_2_TYPE).append(", ")
                 .append(COL_3_TAG).append(" ").append(COL_3_TYPE).append(", ")
