@@ -1,16 +1,17 @@
 package com.abcsoft.catalogador.services;
 
-import com.abcsoft.catalogador.modelo.Book;
+import com.abcsoft.catalogador.modelo.BookAPI.Book;
+import com.abcsoft.catalogador.modelo.BookLocal.BookLocal;
 
 import java.util.List;
 
 public interface BooksServices {
 
-    public Book create(Book book);
-    public Book read(Long id);
-    public Book update(Book book);
+    public BookLocal create(BookLocal book);
+    public BookLocal read(Long id);
+    public BookLocal update(BookLocal book);
     public Boolean delete(Long id);
 
-    public List<Book> getAll();
+    public List<BookLocal> getAll();
 
 }

@@ -1,9 +1,9 @@
-package com.abcsoft.catalogador.modelo;
+package com.abcsoft.catalogador.modelo.BookAPI;
 
-public class Publish_place {
+public class Publisher {
     private String name;
 
-    public Publish_place() {
+    public Publisher() {
     }
 
     public String getName() {

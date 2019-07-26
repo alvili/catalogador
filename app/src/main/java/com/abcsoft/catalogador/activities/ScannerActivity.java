@@ -17,7 +17,7 @@ public class ScannerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_scanner);
 
         Button scan = findViewById(R.id.id_BtnScanCode);
-        final TextView code = (TextView) findViewById(R.id.idTextViewCode);
+        final TextView code = (TextView) findViewById(R.id.idTextCode);
 
         code.setText("9788408085614");
 
@@ -25,7 +25,7 @@ public class ScannerActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ScannerActivity.this, BookDetailsActivity.class);
-                intent.putExtra("isbn", code.getText() );
+                intent.putExtra("isbn", String.valueOf(code.getText()));
                 startActivity(intent);
             }
         });

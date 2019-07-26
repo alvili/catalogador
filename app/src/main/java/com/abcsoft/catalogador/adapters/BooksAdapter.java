@@ -5,18 +5,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
 
 import com.abcsoft.catalogador.R;
-import com.abcsoft.catalogador.modelo.Book;
+import com.abcsoft.catalogador.modelo.BookLocal.BookLocal;
 
 import java.util.List;
 
 public class BooksAdapter extends BaseAdapter {
 
-    private List<Book> books;
+    private List<BookLocal> books;
     private LayoutInflater inflater;
 
-    public BooksAdapter(Context context, List <Book> books){
+    public BooksAdapter(Context context, List <BookLocal> books){
         this.books = books;
         inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
     }
@@ -40,7 +41,10 @@ public class BooksAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = inflater.inflate(R.layout.row_book, null);
 
+        TextView title = view.findViewById(R.id.idBookTitle);
+        //Construyo el contenido
 
+        title.setText(books.get(position).getTitle());
         return view;
     }
 }

@@ -1,4 +1,4 @@
-package com.abcsoft.catalogador.modelo;
+package com.abcsoft.catalogador.modelo.BookAPI;
 
 public class Subject {
     private String url;

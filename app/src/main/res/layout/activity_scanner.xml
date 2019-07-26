@@ -7,8 +7,8 @@
     android:layout_height="match_parent"
     tools:context=".activities.ListViewActivity">
 
-    <TextView
-        android:id="@+id/idTextViewCode"
+    <EditText
+        android:id="@+id/idTextCode"
         android:layout_width="217dp"
         android:layout_height="43dp"
         android:layout_marginStart="8dp"
@@ -16,7 +16,7 @@
         android:layout_marginTop="196dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:text="TextView"
+        android:text=""
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -33,5 +33,6 @@
         android:text="@string/scan"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/idTextViewCode" />
+        app:layout_constraintTop_toBottomOf="@+id/idTextCode" />
+
 </android.support.constraint.ConstraintLayout>

@@ -1,4 +1,4 @@
-package com.abcsoft.catalogador.modelo;
+package com.abcsoft.catalogador.modelo.BookAPI;
 
 import java.util.List;
 

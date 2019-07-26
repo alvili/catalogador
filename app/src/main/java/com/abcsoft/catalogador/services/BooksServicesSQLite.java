@@ -3,7 +3,7 @@ package com.abcsoft.catalogador.services;
 import android.content.Context;
 
 import com.abcsoft.catalogador.database.DatabaseHelper;
-import com.abcsoft.catalogador.modelo.Book;
+import com.abcsoft.catalogador.modelo.BookLocal.BookLocal;
 
 import java.util.List;
 
@@ -17,17 +17,17 @@ public class BooksServicesSQLite implements BooksServices {
 
 
     @Override
-    public Book create(Book book) {
+    public BookLocal create(BookLocal book) {
         return myDB.createBook(book);
     }
 
     @Override
-    public Book read(Long id) {
+    public BookLocal read(Long id) {
         return null;
     }
 
     @Override
-    public Book update(Book book) {
+    public BookLocal update(BookLocal book) {
         return null;
     }
 
@@ -37,7 +37,7 @@ public class BooksServicesSQLite implements BooksServices {
     }
 
     @Override
-    public List<Book> getAll() {
+    public List<BookLocal> getAll() {
         return myDB.getAll();
     }
 }
