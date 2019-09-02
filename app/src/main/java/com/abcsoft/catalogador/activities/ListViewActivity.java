@@ -6,7 +6,7 @@ import android.widget.ListView;
 
 import com.abcsoft.catalogador.R;
 import com.abcsoft.catalogador.adapters.BooksAdapter;
-import com.abcsoft.catalogador.modelo.BookLocal.BookLocal;
+import com.abcsoft.catalogador.model.BookLocal.BookLocal;
 import com.abcsoft.catalogador.services.BooksServices;
 import com.abcsoft.catalogador.services.BooksServicesSQLite;
 

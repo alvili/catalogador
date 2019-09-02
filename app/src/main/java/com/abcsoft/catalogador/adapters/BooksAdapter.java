@@ -8,7 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.abcsoft.catalogador.R;
-import com.abcsoft.catalogador.modelo.BookLocal.BookLocal;
+import com.abcsoft.catalogador.model.BookLocal.BookLocal;
 
 import java.util.List;
 

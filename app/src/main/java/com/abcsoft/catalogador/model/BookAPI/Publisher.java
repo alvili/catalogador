@@ -1,4 +1,4 @@
-package com.abcsoft.catalogador.modelo.BookAPI;
+package com.abcsoft.catalogador.model.BookAPI;
 
 public class Publisher {
     private String name;

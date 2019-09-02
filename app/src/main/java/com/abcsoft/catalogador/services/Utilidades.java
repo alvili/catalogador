@@ -21,4 +21,8 @@ public class Utilidades {
         return null;
     }
 
+    public static String ValidateBookStr(String str){
+        return (str != null && !str.isEmpty()) ? str : "";
+    }
+
 }

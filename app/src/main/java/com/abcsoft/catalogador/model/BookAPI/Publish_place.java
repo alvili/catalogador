@@ -1,4 +1,6 @@
-package com.abcsoft.catalogador.modelo.BookAPI;
+package com.abcsoft.catalogador.model.BookAPI;
+
+import com.abcsoft.catalogador.services.Utilidades;
 
 public class Publish_place {
     private String name;
@@ -7,7 +9,7 @@ public class Publish_place {
     }
 
     public String getName() {
-        return name;
+        return Utilidades.ValidateBookStr(name);
     }
 
     public void setName(String name) {

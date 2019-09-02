@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.abcsoft.catalogador.modelo.BookLocal.BookLocal;
+import com.abcsoft.catalogador.model.BookLocal.BookLocal;
 import com.abcsoft.catalogador.services.Utilidades;
 
 import java.util.ArrayList;

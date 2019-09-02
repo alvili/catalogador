@@ -1,6 +1,6 @@
 package com.abcsoft.catalogador.retrofit;
 
-import com.abcsoft.catalogador.modelo.BookAPI.Book;
+import com.abcsoft.catalogador.model.BookAPI.Book;
 
 import java.util.Map;
 

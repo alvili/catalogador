@@ -3,7 +3,7 @@ package com.abcsoft.catalogador.services;
 import android.content.Context;
 
 import com.abcsoft.catalogador.database.DatabaseHelper;
-import com.abcsoft.catalogador.modelo.BookLocal.BookLocal;
+import com.abcsoft.catalogador.model.BookLocal.BookLocal;
 
 import java.util.List;
 

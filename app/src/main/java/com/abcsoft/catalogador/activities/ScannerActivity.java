@@ -19,7 +19,9 @@ public class ScannerActivity extends AppCompatActivity {
         Button scan = findViewById(R.id.id_BtnScanCode);
         final TextView code = (TextView) findViewById(R.id.idTextCode);
 
-        code.setText("9788408085614");
+//        code.setText("9788408085614");
+        code.setText("9781101965481");
+//        code.setText("8439596065");
 
         scan.setOnClickListener(new View.OnClickListener() {
             @Override

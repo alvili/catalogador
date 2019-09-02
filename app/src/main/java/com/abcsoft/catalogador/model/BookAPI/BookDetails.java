@@ -1,4 +1,4 @@
-package com.abcsoft.catalogador.modelo.BookAPI;
+package com.abcsoft.catalogador.model.BookAPI;
 
 import java.util.List;
 
@@ -8,6 +8,7 @@ public class BookDetails {
     private String title;
     private String url;
 //    private String identifiers; //**********
+    private Long number_of_pages;
     private Cover cover;
     private List<Subject> subjects;
     private String publish_date;
@@ -32,6 +33,14 @@ public class BookDetails {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public Long getNumber_of_pages() {
+        return number_of_pages;
+    }
+
+    public void setNumber_of_pages(Long number_of_pages) {
+        this.number_of_pages = number_of_pages;
     }
 
     public String getUrl() {

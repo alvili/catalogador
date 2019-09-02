@@ -10,8 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.abcsoft.catalogador.R;
-import com.abcsoft.catalogador.modelo.BookAPI.Book;
-import com.abcsoft.catalogador.modelo.BookLocal.BookLocal;
+import com.abcsoft.catalogador.model.BookAPI.Book;
+import com.abcsoft.catalogador.model.BookLocal.BookLocal;
 import com.abcsoft.catalogador.retrofit.BooksAPI;
 import com.abcsoft.catalogador.retrofit.RetrofitHelper;
 import com.abcsoft.catalogador.services.BooksServicesSQLite;
@@ -31,12 +31,14 @@ public class BookDetailsActivity extends AppCompatActivity {
     private BooksAPI jsonPlaceHolderApi_books;
     private BooksServicesSQLite bookServices;
     private Book bookinfo;
+    private BookLocal book = new BookLocal();
 
     private TextView title;
     private TextView isbn;
     private TextView year;
     private TextView publisher;
     private TextView author;
+    private TextView numPags;
     private ImageView cover;
     private Button guardar;
 
@@ -48,10 +50,11 @@ public class BookDetailsActivity extends AppCompatActivity {
 
         //Referencio la vista
         title = (TextView) findViewById(R.id.idTitle);
-        isbn = (TextView ) findViewById(R.id.idIsbn);
-        year = (TextView ) findViewById(R.id.idYear);
-        publisher = (TextView ) findViewById(R.id.idPublisher);
+        isbn = (TextView) findViewById(R.id.idIsbn);
+        year = (TextView) findViewById(R.id.idYear);
+        publisher = (TextView) findViewById(R.id.idPublisher);
         author = (TextView) findViewById(R.id.idAuthor);
+        numPags = (TextView) findViewById(R.id.idNumPags);
         cover = (ImageView) findViewById(R.id.idCover);
         guardar = (Button) findViewById(R.id.idBtnGuardarLibro);
 
@@ -70,7 +73,7 @@ public class BookDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //Guardo a la bbdd local
-                guardarDatos();
+                guardarDatosAdicionales();
 
                 //Vuelvo a la vista principal
                 Intent intent = new Intent(BookDetailsActivity.this, MainActivity.class);
@@ -103,15 +106,25 @@ public class BookDetailsActivity extends AppCompatActivity {
 
                 //Recupero los datos e inflo la vista
                 String raw = response.body();
-                raw=raw.replaceFirst(":"+isbn,"")
-                        .replaceFirst("ISBN","isbn");
 
-                Gson gson = new Gson();
-                bookinfo = new Gson().fromJson(raw, Book.class);
-                bookinfo.setIsbncode(isbn);
+                if (!raw.equals("{}")) {
+                    //Modifico el formato de los datos para poder leerlos con "fromJson"
+                    raw = raw.replaceFirst(":" + isbn, "")
+                            .replaceFirst("ISBN", "isbn");
 
-                //Muestro los datos
-                rellenarCampos();
+                    Gson gson = new Gson();
+                    bookinfo = new Gson().fromJson(raw, Book.class); //Rellena el modelo con los datos del json
+                    bookinfo.setIsbncode(isbn); //isbn no esta entre los datos que vienen por json
+
+                    //Muestro los datos
+                    extraerDatos();
+                    mostrarCampos();
+                } else { //No arriba res
+                    //Toast("")
+                    title.setText("NOT FOUND");
+                    reiniciarDatos();
+//                    ocultarcampos();
+                }
 
             }
 
@@ -124,23 +137,50 @@ public class BookDetailsActivity extends AppCompatActivity {
 
     }
 
-    private void rellenarCampos(){
-        title.setText(bookinfo.getIsbn().getTitle());
-        isbn.setText(bookinfo.getIsbncode());
-        year.setText(bookinfo.getIsbn().getPublish_date() + ", " + bookinfo.getIsbn().getPublish_places().get(0).getName());
-        publisher.setText(bookinfo.getIsbn().getPublishers().get(0).getName());
-        author.setText(bookinfo.getIsbn().getAuthors().get(0).getName());
-        Picasso.get().load(bookinfo.getIsbn().getCover().getLarge()).into(cover);
+    private void mostrarCampos(){
+        title.setText(book.getTitle());
+        isbn.setText(book.getIsbn());
+        year.setText(book.getYear() + ", " + book.getPublishPlace());
+        publisher.setText(book.getPublisher());
+        author.setText(book.getAuthor());
+        numPags.setText(String.valueOf(book.getNumPages()));
+        if (!book.getCoverLink().equals("")) {
+            Picasso.get().load(book.getCoverLink()).into(cover);
+        }
     }
 
-    public void guardarDatos(){
-        BookLocal book = new BookLocal();
-        book.setIsbn(String.valueOf(isbn.getText()));
-        book.setTitle(String.valueOf(title.getText()));
-        book.setAuthor(String.valueOf(author.getText()));
-        book.setPublisher(String.valueOf(publisher.getText()));
-        book.setYear(String.valueOf(year.getText()));
+    public void reiniciarDatos() {
+        book.setIsbn("");
+        book.setTitle("");
+        book.setAuthor("");
+        book.setPublisher("");
+        book.setYear("");
+        book.setPublishPlace("");
+        book.setNumPages(0);
+        book.setCoverLink("");
+    }
+
+    public void extraerDatos() {
+//        BookLocal book = new BookLocal();
+        //Extraigo algunos datos seleccionados del modelo json
+        //Mover a una clase dedicada a eso
+        book.setIsbn(bookinfo.getIsbncode());
+        book.setTitle(bookinfo.getIsbn().getTitle());
+        book.setAuthor(bookinfo.getIsbn().getAuthors().get(0).getName());
+        book.setPublisher(bookinfo.getIsbn().getPublishers().get(0).getName());
+        book.setYear(bookinfo.getIsbn().getPublish_date());
+        if (bookinfo.getIsbn().getPublish_places() != null && !bookinfo.getIsbn().getPublish_places().isEmpty()) {
+            book.setPublishPlace(bookinfo.getIsbn().getPublish_places().get(0).getName());
+        } else {
+            book.setPublishPlace("");
+        }
+        book.setCoverLink(bookinfo.getIsbn().getCover().getLarge());
+        book.setNumPages(bookinfo.getIsbn().getNumber_of_pages());
+    }
+
+    public void guardarDatosAdicionales(){
         book.setDate(new Date());
+        book.setNotes("");
         book.setPrice(0.0);
         book.setLongitud(0.0);
         book.setLatitud(0.0);

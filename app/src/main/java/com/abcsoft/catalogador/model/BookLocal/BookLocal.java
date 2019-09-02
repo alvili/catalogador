@@ -1,4 +1,4 @@
-package com.abcsoft.catalogador.modelo.BookLocal;
+package com.abcsoft.catalogador.model.BookLocal;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -9,12 +9,48 @@ public class BookLocal implements Serializable {
     private String author;
     private String isbn;
     private String publisher;
+    private String publishPlace;
     private String year;
+    private String coverLink;
+    private String notes;
+    private Long numPages;
     private Double price;
     private Double longitud;
     private Double latitud;
 
     public BookLocal() {
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public Long getNumPages() {
+        return numPages;
+    }
+
+    public void setNumPages(Long numPages) {
+        this.numPages = numPages;
+    }
+
+    public String getCoverLink() {
+        return coverLink;
+    }
+
+    public void setCoverLink(String coverLink) {
+        this.coverLink = coverLink;
+    }
+
+    public String getPublishPlace() {
+        return publishPlace;
+    }
+
+    public void setPublishPlace(String publishPlace) {
+        this.publishPlace = publishPlace;
     }
 
     public String getTitle() {

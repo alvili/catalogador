@@ -1,7 +1,6 @@
 package com.abcsoft.catalogador.services;
 
-import com.abcsoft.catalogador.modelo.BookAPI.Book;
-import com.abcsoft.catalogador.modelo.BookLocal.BookLocal;
+import com.abcsoft.catalogador.model.BookLocal.BookLocal;
 
 import java.util.List;
 
