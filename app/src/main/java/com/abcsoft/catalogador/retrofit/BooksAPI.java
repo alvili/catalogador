@@ -1,6 +1,6 @@
 package com.abcsoft.catalogador.retrofit;
 
-import com.abcsoft.catalogador.model.BookAPI.Book;
+import com.abcsoft.catalogador.model.BookAPI.BookOL;
 
 import java.util.Map;
 
@@ -11,7 +11,7 @@ import retrofit2.http.QueryMap;
 public interface BooksAPI {
 
     @GET("api/books")
-    Call<Book> getBook(@QueryMap Map<String, String> params);
+    Call<BookOL> getBook(@QueryMap Map<String, String> params);
 
     @GET("api/books")
     Call<String> getRAW(@QueryMap Map<String, String> params);

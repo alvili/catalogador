@@ -3,4 +3,11 @@
     <string name="catalogo">Catálogo</string>
     <string name="scan">Escanear código</string>
     <string name="guardar">Guardar</string>
+    <string name="title">Title:</string>
+    <string name="year">Year:</string>
+    <string name="publisher">Publisher:</string>
+    <string name="author">Author:</string>
+    <string name="pags">#Pags:</string>
+    <string name="price">Price:</string>
+    <string name="notes">Notes:</string>
 </resources>
