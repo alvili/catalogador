@@ -1,9 +1,9 @@
-package com.abcsoft.catalogador.model.BookLocal;
+package com.abcsoft.catalogador.model.Book;
 
 import java.io.Serializable;
 import java.util.Date;
 
-public class BookLocal implements Serializable {
+public class Book implements Serializable {
     private String isbn;
     private Date date;
     private String title;
@@ -18,7 +18,7 @@ public class BookLocal implements Serializable {
     private double longitud;
     private double latitud;
 
-    public BookLocal() {
+    public Book() {
     }
 
     public String getTitle() {
@@ -123,5 +123,8 @@ public class BookLocal implements Serializable {
 
     public void setLatitud(double latitud) {
         this.latitud = latitud;
+    }
+
+    public void setNumPages(CharSequence text) {
     }
 }

@@ -1,6 +1,6 @@
 package com.abcsoft.catalogador.model.BookAPI;
 
-public class BookOL {
+public class BookOpenLibrary {
 
     private BookDetails isbn;
     private String isbncode;

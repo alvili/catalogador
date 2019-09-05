@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.abcsoft.catalogador.model.BookLocal.BookLocal;
+import com.abcsoft.catalogador.model.Book.Book;
 import com.abcsoft.catalogador.services.Utilidades;
 
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //Nombre de la bbdd
     public static final String DATABASE_NAME = "catalogador.db";
-    //data/data/com.abcsoft.catalogador/databases/catalogador.db
+    //path -> data/data/com.abcsoft.catalogador/databases/catalogador.db
 
     //Nombre de la tabla
     public static final String TABLE_NAME = "BOOKS";
@@ -32,6 +32,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_7_TAG ="PRICE";
     public static final String COL_8_TAG ="LONGITUD";
     public static final String COL_9_TAG ="LATITUD";
+    public static final String COL_10_TAG ="PLACE";
+    public static final String COL_11_TAG ="PAGES";
 
 
     public static final String COL_0_TYPE ="INTEGER";
@@ -44,6 +46,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_7_TYPE ="REAL";
     public static final String COL_8_TYPE ="REAL";
     public static final String COL_9_TYPE ="REAL";
+    public static final String COL_10_TYPE ="TEXT";
+    public static final String COL_11_TYPE ="INTEGER";
 
 
     public DatabaseHelper(Context context) {
@@ -65,7 +69,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 .append(COL_6_TAG).append(" ").append(COL_6_TYPE).append(", ")
                 .append(COL_7_TAG).append(" ").append(COL_7_TYPE).append(", ")
                 .append(COL_8_TAG).append(" ").append(COL_8_TYPE).append(", ")
-                .append(COL_9_TAG).append(" ").append(COL_9_TYPE).append(");");
+                .append(COL_9_TAG).append(" ").append(COL_9_TYPE).append(", ")
+                .append(COL_10_TAG).append(" ").append(COL_10_TYPE).append(", ")
+                .append(COL_11_TAG).append(" ").append(COL_11_TYPE).append(");");
         db.execSQL(strSQL.toString());
 
     }
@@ -77,7 +83,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public BookLocal createBook(BookLocal book){
+    public Book createBook(Book book){
         //Necesito una referencia de acceso a la bbdd
         SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura. Si la bbdd no existe, la crea
 
@@ -92,6 +98,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(COL_7_TAG, book.getPrice());
         contentValues.put(COL_8_TAG, book.getLongitud());
         contentValues.put(COL_9_TAG, book.getLatitud());
+        contentValues.put(COL_10_TAG, book.getPublishPlace());
+        contentValues.put(COL_11_TAG, book.getNumPages());
 
         //CON db.beginTransaction() no guarda datos a la bbdd
 //        db.beginTransaction();//Inicia transaccion.Sirve para garantizar la consistencia de la bbdd en caso de problemas
@@ -111,13 +119,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return id == -1 ? null : book;
     }
 
-    public List<BookLocal> getAll(){
+    public List<Book> getAll(){
 
             //Conexión a la bbdd
             SQLiteDatabase db = this.getWritableDatabase();
 
             //Mediante rawQuery
-            Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " ORDER BY " + COL_2_TAG + " DESC", null);
+            Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " ORDER BY " + COL_1_TAG + " DESC", null);
 //            Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
 /*
         //Mediante query
@@ -143,15 +151,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //***************************************************************************************
 
         //Convierte un cursor de la tabla lecturas a una List
-        private List<BookLocal> cursorBookToList(Cursor cursor){
-            List<BookLocal> books = new ArrayList<>();
-            BookLocal book;
+        private List<Book> cursorBookToList(Cursor cursor){
+            List<Book> books = new ArrayList<>();
+            Book book;
 
             //Verifico que el cursor no esté vacio
             if (cursor != null && cursor.getCount() > 0) {
                 cursor.moveToFirst();
                 while (cursor.moveToNext()) {
-                    book = new BookLocal();
+                    book = new Book();
                     book.setDate(Utilidades.getDateFromString(cursor.getString(1)));
                     book.setTitle(cursor.getString(2));
                     book.setAuthor(cursor.getString(3));
@@ -161,6 +169,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     book.setPrice(cursor.getDouble(7));
                     book.setLongitud(cursor.getDouble(8));
                     book.setLatitud(cursor.getDouble(9));
+                    book.setPublishPlace(cursor.getString(10));
+                    book.setNumPages(cursor.getInt(11));
                     books.add(book);
                 }
             }

@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button escanear = findViewById(R.id.idBtnEscanear);
         Button catalogo = findViewById(R.id.idBtnCatalogo);
-
+        Button sync = findViewById(R.id.idBtnSync);
 
         escanear.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -35,6 +35,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        sync.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO sincronizar bbdd sqlite con la bbdd del servidor REST
+            }
+        });
 
     }
 }

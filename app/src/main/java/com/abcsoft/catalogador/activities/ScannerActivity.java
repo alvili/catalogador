@@ -9,9 +9,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.abcsoft.catalogador.R;
-import com.abcsoft.catalogador.model.BookAPI.BookOL;
-import com.abcsoft.catalogador.model.BookLocal.BookLocal;
+import com.abcsoft.catalogador.model.BookAPI.BookOpenLibrary;
+import com.abcsoft.catalogador.model.Book.Book;
 import com.abcsoft.catalogador.retrofit.BooksAPI;
+import com.abcsoft.catalogador.retrofit.RetrofitHelper;
 import com.google.gson.Gson;
 
 import java.util.HashMap;
@@ -23,10 +24,7 @@ import retrofit2.Response;
 
 public class ScannerActivity extends AppCompatActivity {
 
-    private BooksAPI jsonPlaceHolderApi_books;
-    private BookOL bookinfo;
-    private BookLocal book;
-
+    private Book book;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,23 +34,21 @@ public class ScannerActivity extends AppCompatActivity {
         Button scan = findViewById(R.id.id_BtnScanCode);
         final TextView code = (TextView) findViewById(R.id.idTextCode);
 
-        code.setText("9788408085614");
-//        code.setText("9781101965481");
+//        code.setText("9788408085614");
+        code.setText("9781101965481");
 //        code.setText("8439596065");
+
+        book = new Book();
 
         scan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                //Recupero les dades
+                //Pido los datos al servicio REST de OpenLibrary
                 getRaw(code.getText().toString());
-
             }
         });
 
     }
-
-
 
     private void getRaw(final String bookIsbn){
 
@@ -61,6 +57,7 @@ public class ScannerActivity extends AppCompatActivity {
         params.put("jscmd", "data");
         params.put("format", "json");
 
+        BooksAPI jsonPlaceHolderApi_books = RetrofitHelper.getBooksAPIsc();
         Call<String> call = jsonPlaceHolderApi_books.getRAW(params);
 
         call.enqueue(new Callback<String>() {
@@ -81,19 +78,18 @@ public class ScannerActivity extends AppCompatActivity {
                 if (!raw.equals("{}")) {
                     //Modifico el formato de los datos para poder leerlos con "fromJson"
                     raw = raw.replaceFirst(":" + bookIsbn, "")
-                            .replaceFirst("ISBN", "isbn");
+                             .replaceFirst("ISBN", "isbn");
 
                     Gson gson = new Gson();
-                    bookinfo = new Gson().fromJson(raw, BookOL.class); //Rellena el modelo con los datos del json
+                    BookOpenLibrary bookinfo = new Gson().fromJson(raw, BookOpenLibrary.class); //Rellena el modelo con los datos del json
                     bookinfo.setIsbncode(bookIsbn); //isbn no esta entre los datos que vienen por json
 
                     //Transformo los datos al formato local
-                    extraerDatos();
+                    extraerDatos(bookinfo);
                     mostrarDetalles();
                 } else { //No arriba res
                     mostrarNotFound();
                 }
-
             }
 
             @Override
@@ -105,8 +101,7 @@ public class ScannerActivity extends AppCompatActivity {
 
     }
 
-    public void extraerDatos() {
-//        BookLocal book = new BookLocal();
+    public void extraerDatos(BookOpenLibrary bookinfo) {
         //Extraigo algunos datos seleccionados del modelo json
         //Mover a una clase dedicada a eso
         book.setIsbn(bookinfo.getIsbncode());
@@ -124,29 +119,32 @@ public class ScannerActivity extends AppCompatActivity {
     }
 
     private void mostrarDetalles(){
-        Intent intent = new Intent(ScannerActivity.this, DetailsScannedBookActivity.class);
-        intent.putExtra("isbn", book.getIsbn());
-        intent.putExtra("title", book.getTitle());
-        intent.putExtra("author", book.getAuthor());
-        intent.putExtra("publisher", book.getPublisher());
-        intent.putExtra("year", book.getYear());
-        intent.putExtra("place", book.getPublishPlace());
-        intent.putExtra("cover", book.getCoverLink());
-        intent.putExtra("pags", book.getNumPages());
+        Intent intent = new Intent(ScannerActivity.this, BookDetailsActivity.class);
+        Bundle b = new Bundle();
+        b.putString("isbn", book.getIsbn());
+        b.putString("title", book.getTitle());
+        b.putString("author", book.getAuthor());
+        b.putString("publisher", book.getPublisher());
+        b.putString("year", book.getYear());
+        b.putString("place", book.getPublishPlace());
+        b.putString("cover", book.getCoverLink());
+        b.putInt("pags", book.getNumPages());
+        intent.putExtras(b);
         startActivity(intent);
-
     }
 
     private void mostrarNotFound() {
-        Intent intent = new Intent(ScannerActivity.this, DetailsScannedBookActivity.class);
-        intent.putExtra("isbn", "NOT FOUND");
-        intent.putExtra("title", "");
-        intent.putExtra("author", "");
-        intent.putExtra("publisher", "");
-        intent.putExtra("year", "");
-        intent.putExtra("place", "");
-        intent.putExtra("cover", "");
-        intent.putExtra("pags", "");
+        Intent intent = new Intent(ScannerActivity.this, BookDetailsActivity.class);
+        Bundle b = new Bundle();
+        b.putString("isbn", "NOT FOUND");
+        b.putString("title", "");
+        b.putString("author", "");
+        b.putString("publisher", "");
+        b.putString("year", "");
+        b.putString("place", "");
+        b.putString("cover", "");
+        b.putInt("pags", 0);
+        intent.putExtras(b);
         startActivity(intent);
     }
 

@@ -20,8 +20,8 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 public class RetrofitHelper {
 
     private static final String REST_URL = "https://openlibrary.org/";
-    private static final Retrofit retrofit;
-    private static final Retrofit retrofitsc;
+    private static final Retrofit retrofit; //GsonConverterFactory
+    private static final Retrofit retrofitsc; //ScalarsConverterFactory
 
     static {
 

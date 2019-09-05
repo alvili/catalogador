@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.DetailsScannedBookActivity" />
+        <activity android:name=".activities.BookDetailsActivity" />
         <activity android:name=".activities.ListViewActivity" />
         <activity android:name=".activities.ScannerActivity" />
         <activity android:name=".activities.MainActivity">

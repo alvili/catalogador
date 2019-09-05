@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">catalogador</string>
-    <string name="catalogo">Catálogo</string>
-    <string name="scan">Escanear código</string>
-    <string name="guardar">Guardar</string>
+    <string name="catalogo">BROWSE</string>
+    <string name="scan">NEW SCAN</string>
+    <string name="sync">SYNC DATABASE</string>
+    <string name="guardar">SAVE</string>
     <string name="title">Title:</string>
     <string name="year">Year:</string>
     <string name="publisher">Publisher:</string>

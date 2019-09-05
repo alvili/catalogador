@@ -9,8 +9,7 @@ import android.widget.ListView;
 
 import com.abcsoft.catalogador.R;
 import com.abcsoft.catalogador.adapters.BooksAdapter;
-import com.abcsoft.catalogador.model.BookAPI.BookDetails;
-import com.abcsoft.catalogador.model.BookLocal.BookLocal;
+import com.abcsoft.catalogador.model.Book.Book;
 import com.abcsoft.catalogador.services.BooksServices;
 import com.abcsoft.catalogador.services.BooksServicesSQLite;
 
@@ -18,7 +17,7 @@ import java.util.List;
 
 public class ListViewActivity  extends AppCompatActivity {
 
-    private List<BookLocal> books;
+    private List<Book> books;
     ListView listBooks;
 
     @Override
@@ -31,12 +30,6 @@ public class ListViewActivity  extends AppCompatActivity {
         //Recupero los datos
         BooksServices booksServices = new BooksServicesSQLite(this);
         books = booksServices.getAll();
-//
-//        //Instancio adaptador con los datos recuperados
-//        BooksAdapter booksAdapter = new BooksAdapter(this, books);
-//
-//        //Asigno el adaptador al ListView
-//        listBooks.setAdapter(booksAdapter);
 
         //Asigno al ListView un adaptador con la lista de libros
         listBooks.setAdapter(new BooksAdapter(this, books));
@@ -44,16 +37,25 @@ public class ListViewActivity  extends AppCompatActivity {
         listBooks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                //Recupero los datos del libro de la bbdd local sqlite
+
                 //Lanzo un intent a los detalles del libro
-                Intent intent = new Intent(ListViewActivity.this, DetailsCatalogedBookActivity.class);
-                //Necesito pasar como paramentr oel libro a mostrar
-                intent.putExtra("bookIsbn", books.get(position).getIsbn());
-                //Cambio la vista
+                Intent intent = new Intent(ListViewActivity.this, BookDetailsActivity.class);
+                Bundle b = new Bundle();
+                b.putString("isbn", books.get(position).getIsbn());
+                b.putString("title", books.get(position).getTitle());
+                b.putString("author", books.get(position).getAuthor());
+                b.putString("publisher", books.get(position).getPublisher());
+                b.putString("year", books.get(position).getYear());
+                b.putString("place", books.get(position).getPublishPlace());
+                b.putString("cover", books.get(position).getCoverLink());
+                b.putInt("pags", books.get(position).getNumPages());
+                intent.putExtras(b);
                 startActivity(intent);
             }
         });
 
     }
-
 
 }
