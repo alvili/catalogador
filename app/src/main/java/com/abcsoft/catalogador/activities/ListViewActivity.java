@@ -27,31 +27,22 @@ public class ListViewActivity  extends AppCompatActivity {
 
         listBooks = (ListView) findViewById(R.id.idListView);
 
-        //Recupero los datos
+        //Recupero la todos los libros...
         BooksServices booksServices = new BooksServicesSQLite(this);
         books = booksServices.getAll();
 
-        //Asigno al ListView un adaptador con la lista de libros
+        //...y los paso a un adaptador para que rellene la lista de libros...
         listBooks.setAdapter(new BooksAdapter(this, books));
 
+        //...y muestre los datos de uno concreto cuando se seleccione
         listBooks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
                 //Recupero los datos del libro de la bbdd local sqlite
 
-                //Lanzo un intent a los detalles del libro
+                //Lanzo un intent y transfiero detalles del libro en un bundle
                 Intent intent = new Intent(ListViewActivity.this, BookDetailsActivity.class);
-                Bundle b = new Bundle();
-                b.putString("isbn", books.get(position).getIsbn());
-                b.putString("title", books.get(position).getTitle());
-                b.putString("author", books.get(position).getAuthor());
-                b.putString("publisher", books.get(position).getPublisher());
-                b.putString("year", books.get(position).getYear());
-                b.putString("place", books.get(position).getPublishPlace());
-                b.putString("cover", books.get(position).getCoverLink());
-                b.putInt("pags", books.get(position).getNumPages());
-                intent.putExtras(b);
+                intent.putExtras(books.get(position).exportToBundle());
                 startActivity(intent);
             }
         });

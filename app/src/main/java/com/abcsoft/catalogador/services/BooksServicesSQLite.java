@@ -28,12 +28,12 @@ public class BooksServicesSQLite implements BooksServices {
 
     @Override
     public Book update(Book book) {
-        return null;
+        return myDB.updateBook(book);
     }
 
     @Override
     public Boolean delete(Long id) {
-        return null;
+        return myDB.deleteBook(id);
     }
 
     @Override

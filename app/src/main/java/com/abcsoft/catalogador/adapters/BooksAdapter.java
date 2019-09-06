@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.abcsoft.catalogador.R;
 import com.abcsoft.catalogador.model.Book.Book;
+import com.abcsoft.catalogador.services.Utilidades;
 
 import java.util.List;
 
@@ -41,10 +42,13 @@ public class BooksAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = inflater.inflate(R.layout.row_book, null);
 
+        //Referencio la vista
         TextView title = view.findViewById(R.id.idBookTitle);
-        //Construyo el contenido
+        TextView scanDate = view.findViewById(R.id.idScanDate);
 
+        //Construyo el contenido
         title.setText(books.get(position).getTitle());
+        scanDate.setText(Utilidades.getStringFromDate(books.get(position).getDateCreation()));
         return view;
     }
 }

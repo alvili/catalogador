@@ -20,9 +20,11 @@ public class BookDetailsActivity extends AppCompatActivity {
     private BooksServicesSQLite bookServices;
     private Book book = new Book();
 
+    private TextView found;
     private TextView isbn;
     private TextView title;
-    private TextView year;
+    private TextView publishDate;
+    private TextView publishPlace;
     private TextView publisher;
     private TextView author;
     private TextView numPags;
@@ -30,6 +32,7 @@ public class BookDetailsActivity extends AppCompatActivity {
     private TextView notes;
     private ImageView cover;
     private Button guardar;
+    private Button borrar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +40,11 @@ public class BookDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_bookdetails);
 
         //Referencio la vista
+        found = (TextView) findViewById(R.id.idFound);
         title = (TextView) findViewById(R.id.idTitle);
         isbn = (TextView) findViewById(R.id.idIsbn);
-        year = (TextView) findViewById(R.id.idYear);
+        publishDate = (TextView) findViewById(R.id.idDate);
+        publishPlace = (TextView) findViewById(R.id.idPlace);
         publisher = (TextView) findViewById(R.id.idPublisher);
         author = (TextView) findViewById(R.id.idAuthor);
         numPags = (TextView) findViewById(R.id.idNumPags);
@@ -47,80 +52,107 @@ public class BookDetailsActivity extends AppCompatActivity {
         notes = (TextView) findViewById(R.id.idNotes);
         cover = (ImageView) findViewById(R.id.idCover);
         guardar = (Button) findViewById(R.id.idBtnGuardarLibro);
+        borrar = (Button) findViewById(R.id.idBtnBorrarLibro);
 
         //Recogemos los datos enviados por el intent
-        readBundle(getIntent().getExtras());
+        book.importFromBundle(getIntent().getExtras());
 
         //Traslado los datos a los campos
-        mostrarCampos();
+        book2Form();
 
         guardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //Guardo a la bbdd local
-                guardarDatos();
+                formToBook();
+                bookToBBDD();
 
                 //Vuelvo a la vista principal
-                Intent intent = new Intent(BookDetailsActivity.this, MainActivity.class);
-                startActivity(intent);
+                gotoPrincipal();
+            }
+        });
+
+        borrar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //borra l'element
+                bookServices.delete(book.getId());
+
+                //Vuelvo a la vista principal
+                gotoPrincipal();
             }
         });
     }
 
-    private void readBundle(Bundle b){
-        //Solo si bundle no es null pido los datos
-        if(b != null) {
-            book.setIsbn(b.getString("isbn"));
-            book.setTitle(b.getString("title"));
-            book.setAuthor(b.getString("author"));
-            book.setPublisher(b.getString("publisher"));
-            book.setYear(b.getString("year"));
-            book.setPublishPlace(b.getString("place"));
-            book.setCoverLink(b.getString("cover"));
-            book.setNumPages(b.getInt("pags"));
-        }
-    }
+    private void book2Form() {
 
-    private void mostrarCampos(){
-        if (validate(book.getTitle())) {title.setText(book.getTitle());}
-        if (validate(book.getIsbn())) {isbn.setText(book.getIsbn());}
-        if (validate(book.getYear())) {year.setText(book.getYear() + ", " + book.getPublishPlace());}
-        if (validate(book.getPublisher())) {publisher.setText(book.getPublisher());}
-        if (validate(book.getAuthor())) {author.setText(book.getAuthor());}
+        found.setText("NOT FOUND");
+        if (book.getFound()) {
+            found.setVisibility(View.INVISIBLE);
+        } else {
+            found.setVisibility(View.VISIBLE);
+        }
+        if (validate(book.getTitle())) {
+            title.setText(book.getTitle());
+        }
+        if (validate(book.getIsbn())) {
+            isbn.setText(book.getIsbn());
+        }
+        if (validate(book.getPublishDate())) {
+            publishDate.setText(book.getPublishDate());
+        }
+        if (validate(book.getPublishPlace())) {
+            publishPlace.setText(book.getPublishPlace());
+        }
+
+        if (validate(book.getPublisher())) {
+            publisher.setText(book.getPublisher());
+        }
+        if (validate(book.getAuthor())) {
+            author.setText(book.getAuthor());
+        }
         numPags.setText(String.valueOf(book.getNumPages()));
         if (validate(book.getCoverLink())) {
             if (!book.getCoverLink().equals("")) {
                 Picasso.get().load(book.getCoverLink()).into(cover);
             }
         }
+        price.setText(String.valueOf(book.getPrice()));
+        notes.setText(book.getNotes());
+
     }
 
-    private boolean validate (String str){
+    private boolean validate(String str) {
         return (str != null && !str.isEmpty());
     }
 
-    public void guardarDatos(){
+    public void formToBook() {
         //Actualizo book con los datos del formulario
 
         book.setIsbn(isbn.getText().toString());
         book.setTitle(title.getText().toString());
         book.setAuthor(author.getText().toString());
         book.setPublisher(publisher.getText().toString());
-        book.setYear(year.getText().toString());
-//        book.setPublishPlace(place.getText().toString());
+        book.setPublishDate(publishDate.getText().toString());
+        book.setPublishPlace(publishPlace.getText().toString());
         book.setNumPages(Integer.parseInt(numPags.getText().toString()));
 
-        book.setDate(new Date());
+        book.setDateCreation(new Date());
         book.setNotes(notes.getText().toString());
         book.setPrice(Double.parseDouble(price.getText().toString()));
         book.setLongitud(0.0);
         book.setLatitud(0.0);
+        //MODIFICAR SI YA EXISTE
+    }
 
+    public void bookToBBDD() {
         bookServices = new BooksServicesSQLite(getApplicationContext());
         bookServices.create(book);
+    }
 
-        //MODIFICAR SI YA EXISTE
-
+    public void gotoPrincipal(){
+        Intent intent = new Intent(BookDetailsActivity.this, MainActivity.class);
+        startActivity(intent);
     }
 
 }

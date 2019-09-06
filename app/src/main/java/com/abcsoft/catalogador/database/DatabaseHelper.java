@@ -12,6 +12,7 @@ import com.abcsoft.catalogador.services.Utilidades;
 import java.util.ArrayList;
 import java.util.List;
 
+//implementa las funcionalidades declaradas en el servicio BooksService a nivel sql
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     //Nombre de la bbdd
@@ -34,7 +35,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_9_TAG ="LATITUD";
     public static final String COL_10_TAG ="PLACE";
     public static final String COL_11_TAG ="PAGES";
-
+    public static final String COL_12_TAG ="COVERLINK";
+    public static final String COL_13_TAG ="FOUND";
 
     public static final String COL_0_TYPE ="INTEGER";
     public static final String COL_1_TYPE ="TEXT";  // ??
@@ -48,7 +50,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_9_TYPE ="REAL";
     public static final String COL_10_TYPE ="TEXT";
     public static final String COL_11_TYPE ="INTEGER";
-
+    public static final String COL_12_TYPE ="TEXT";
+    public static final String COL_13_TYPE ="TINYINT(1)";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, 2);
@@ -71,7 +74,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 .append(COL_8_TAG).append(" ").append(COL_8_TYPE).append(", ")
                 .append(COL_9_TAG).append(" ").append(COL_9_TYPE).append(", ")
                 .append(COL_10_TAG).append(" ").append(COL_10_TYPE).append(", ")
-                .append(COL_11_TAG).append(" ").append(COL_11_TYPE).append(");");
+                .append(COL_11_TAG).append(" ").append(COL_11_TYPE).append(", ")
+                .append(COL_12_TAG).append(" ").append(COL_12_TYPE).append(", ")
+                .append(COL_13_TAG).append(" ").append(COL_13_TYPE).append(");");
         db.execSQL(strSQL.toString());
 
     }
@@ -80,7 +85,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME); //Elimina la tabla
         onCreate(db); //Reconstruye la tabla desde 0. Adios a los datos
-
     }
 
     public Book createBook(Book book){
@@ -89,17 +93,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         //Necesito un contenedor de valores
         ContentValues contentValues = new ContentValues();
-        contentValues.put(COL_1_TAG, Utilidades.getStringFromDate(book.getDate()));
+        contentValues.put(COL_1_TAG, Utilidades.getStringFromDate(book.getDateCreation()));
         contentValues.put(COL_2_TAG, book.getTitle());
         contentValues.put(COL_3_TAG, book.getAuthor());
         contentValues.put(COL_4_TAG, book.getIsbn());
         contentValues.put(COL_5_TAG, book.getPublisher());
-        contentValues.put(COL_6_TAG, book.getYear());
+        contentValues.put(COL_6_TAG, book.getPublishDate());
         contentValues.put(COL_7_TAG, book.getPrice());
         contentValues.put(COL_8_TAG, book.getLongitud());
         contentValues.put(COL_9_TAG, book.getLatitud());
         contentValues.put(COL_10_TAG, book.getPublishPlace());
         contentValues.put(COL_11_TAG, book.getNumPages());
+        contentValues.put(COL_12_TAG, book.getCoverLink());
+        contentValues.put(COL_13_TAG, book.getFound());
 
         //CON db.beginTransaction() no guarda datos a la bbdd
 //        db.beginTransaction();//Inicia transaccion.Sirve para garantizar la consistencia de la bbdd en caso de problemas
@@ -119,13 +125,40 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return id == -1 ? null : book;
     }
 
-    public List<Book> getAll(){
+    public Book updateBook(Book book){
+        //Modifica el libro con un id concreto
+        SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura. Si la bbdd no existe, la crea
+
+        //Necesito un contenedor de valores
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COL_1_TAG, Utilidades.getStringFromDate(book.getDateCreation()));
+        contentValues.put(COL_2_TAG, book.getTitle());
+        contentValues.put(COL_3_TAG, book.getAuthor());
+        contentValues.put(COL_4_TAG, book.getIsbn());
+        contentValues.put(COL_5_TAG, book.getPublisher());
+        contentValues.put(COL_6_TAG, book.getPublishDate());
+        contentValues.put(COL_7_TAG, book.getPrice());
+        contentValues.put(COL_8_TAG, book.getLongitud());
+        contentValues.put(COL_9_TAG, book.getLatitud());
+        contentValues.put(COL_10_TAG, book.getPublishPlace());
+        contentValues.put(COL_11_TAG, book.getNumPages());
+        contentValues.put(COL_12_TAG, book.getCoverLink());
+        contentValues.put(COL_13_TAG, book.getFound());
+
+        db.update(TABLE_NAME, contentValues, COL_0_TAG+"="+book.getId(), null);
+        db.close();
+
+        return book;
+//        return id == -1 ? null : book;
+    }
+
+        public List<Book> getAll(){
 
             //Conexión a la bbdd
             SQLiteDatabase db = this.getWritableDatabase();
 
             //Mediante rawQuery
-            Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " ORDER BY " + COL_1_TAG + " DESC", null);
+            Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " ORDER BY " + COL_1_TAG + " ASC", null);
 //            Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
 /*
         //Mediante query
@@ -143,6 +176,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return cursorBookToList(cursor);
     }
 
+    public Boolean deleteBook(Long id){
+
+        //Conexión a la bbdd
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(TABLE_NAME, COL_0_TAG+"="+id, null);
+
+//        //Mediante rawQuery
+//        Cursor cursor = db.rawQuery("DELETE FROM " + TABLE_NAME + " WHERE " + COL_0_TAG + " ='" + id + "'", null);
+
+
+        return Boolean.TRUE;
+    }
 
 //***************************************************************************************
 //************************                                     **************************
@@ -160,17 +206,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 cursor.moveToFirst();
                 while (cursor.moveToNext()) {
                     book = new Book();
-                    book.setDate(Utilidades.getDateFromString(cursor.getString(1)));
+                    book.setId(cursor.getInt(0));
+                    book.setDateCreation(Utilidades.getDateFromString(cursor.getString(1)));
                     book.setTitle(cursor.getString(2));
                     book.setAuthor(cursor.getString(3));
                     book.setIsbn(cursor.getString(4));
                     book.setPublisher(cursor.getString(5));
-                    book.setYear(cursor.getString(6));
+                    book.setPublishDate(cursor.getString(6));
                     book.setPrice(cursor.getDouble(7));
                     book.setLongitud(cursor.getDouble(8));
                     book.setLatitud(cursor.getDouble(9));
                     book.setPublishPlace(cursor.getString(10));
                     book.setNumPages(cursor.getInt(11));
+                    book.setCoverLink(cursor.getString(12));
+                    book.setFound(Boolean.valueOf(String.valueOf(cursor.getInt(13))));
                     books.add(book);
                 }
             }

@@ -38,6 +38,14 @@ public class ScannerActivity extends AppCompatActivity {
         code.setText("9781101965481");
 //        code.setText("8439596065");
 
+        //TODO:
+        //1) Obtener ISBN
+        //2) Comprobar si ya existe
+        //3) Si nuevo, cargar datos de OpenLibrary
+        //4) Si ya existia, cargar datos de la bbdd
+        //5) (preguntar? dar opcion?)
+
+
         book = new Book();
 
         scan.setOnClickListener(new View.OnClickListener() {
@@ -85,11 +93,10 @@ public class ScannerActivity extends AppCompatActivity {
                     bookinfo.setIsbncode(bookIsbn); //isbn no esta entre los datos que vienen por json
 
                     //Transformo los datos al formato local
-                    extraerDatos(bookinfo);
-                    mostrarDetalles();
-                } else { //No arriba res
-                    mostrarNotFound();
+                    book.importFromopenLibrary(bookinfo);
                 }
+                //Cambio de activity
+                mostrarDetalles();
             }
 
             @Override
@@ -101,50 +108,14 @@ public class ScannerActivity extends AppCompatActivity {
 
     }
 
-    public void extraerDatos(BookOpenLibrary bookinfo) {
-        //Extraigo algunos datos seleccionados del modelo json
-        //Mover a una clase dedicada a eso
-        book.setIsbn(bookinfo.getIsbncode());
-        book.setTitle(bookinfo.getIsbn().getTitle());
-        book.setAuthor(bookinfo.getIsbn().getAuthors().get(0).getName());
-        book.setPublisher(bookinfo.getIsbn().getPublishers().get(0).getName());
-        book.setYear(bookinfo.getIsbn().getPublish_date());
-        if (bookinfo.getIsbn().getPublish_places() != null && !bookinfo.getIsbn().getPublish_places().isEmpty()) {
-            book.setPublishPlace(bookinfo.getIsbn().getPublish_places().get(0).getName());
-        } else {
-            book.setPublishPlace("");
-        }
-        book.setCoverLink(bookinfo.getIsbn().getCover().getLarge());
-        book.setNumPages(bookinfo.getIsbn().getNumber_of_pages().intValue());
-    }
-
     private void mostrarDetalles(){
+        //llamo a BookDetailsActivity pasandole los datos del libro en un intent
         Intent intent = new Intent(ScannerActivity.this, BookDetailsActivity.class);
-        Bundle b = new Bundle();
-        b.putString("isbn", book.getIsbn());
-        b.putString("title", book.getTitle());
-        b.putString("author", book.getAuthor());
-        b.putString("publisher", book.getPublisher());
-        b.putString("year", book.getYear());
-        b.putString("place", book.getPublishPlace());
-        b.putString("cover", book.getCoverLink());
-        b.putInt("pags", book.getNumPages());
-        intent.putExtras(b);
-        startActivity(intent);
-    }
-
-    private void mostrarNotFound() {
-        Intent intent = new Intent(ScannerActivity.this, BookDetailsActivity.class);
-        Bundle b = new Bundle();
-        b.putString("isbn", "NOT FOUND");
-        b.putString("title", "");
-        b.putString("author", "");
-        b.putString("publisher", "");
-        b.putString("year", "");
-        b.putString("place", "");
-        b.putString("cover", "");
-        b.putInt("pags", 0);
-        intent.putExtras(b);
+        if (book.getFound()){
+            intent.putExtras(book.exportToBundle());
+        } else {
+            intent.putExtras(book.exportToBundleNotFound());
+        }
         startActivity(intent);
     }
 

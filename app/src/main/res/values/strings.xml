@@ -5,10 +5,12 @@
     <string name="sync">SYNC DATABASE</string>
     <string name="guardar">SAVE</string>
     <string name="title">Title:</string>
-    <string name="year">Year:</string>
+    <string name="date">Date:</string>
     <string name="publisher">Publisher:</string>
     <string name="author">Author:</string>
     <string name="pags">#Pags:</string>
     <string name="price">Price:</string>
     <string name="notes">Notes:</string>
+    <string name="place">Place:</string>
+    <string name="delete">DELETE</string>
 </resources>
