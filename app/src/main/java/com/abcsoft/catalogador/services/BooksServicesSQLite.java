@@ -23,7 +23,7 @@ public class BooksServicesSQLite implements BooksServices {
 
     @Override
     public Book read(Long id) {
-        return null;
+        return myDB.readBook(id);
     }
 
     @Override

@@ -21,6 +21,14 @@ public class Utilidades {
         return null;
     }
 
+    public static int getIntegerFromBoolean(Boolean bool){
+        return (bool) ? 1 : 0;
+    }
+
+    public static Boolean getBooleanFromInteger(int val){
+        return (val == 1) ? Boolean.TRUE : Boolean.FALSE;
+    }
+
     public static String ValidateBookStr(String str){
         return (str != null && !str.isEmpty()) ? str : "";
     }

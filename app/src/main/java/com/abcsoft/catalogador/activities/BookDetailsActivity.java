@@ -87,11 +87,12 @@ public class BookDetailsActivity extends AppCompatActivity {
     private void book2Form() {
 
         found.setText("NOT FOUND");
-        if (book.getFound()) {
-            found.setVisibility(View.INVISIBLE);
-        } else {
-            found.setVisibility(View.VISIBLE);
-        }
+        found.setVisibility((book.getFound()) ? View.INVISIBLE : View.VISIBLE);
+//        if (book.getFound()) {
+//            found.setVisibility(View.INVISIBLE);
+//        } else {
+//            found.setVisibility(View.VISIBLE);
+//        }
         if (validate(book.getTitle())) {
             title.setText(book.getTitle());
         }
