@@ -58,7 +58,7 @@ public class BookDetailsActivity extends AppCompatActivity {
         book.importFromBundle(getIntent().getExtras());
 
         //Traslado los datos a los campos
-        book2Form();
+        bookToForm();
 
         guardar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,21 +78,17 @@ public class BookDetailsActivity extends AppCompatActivity {
                 //borra l'element
                 bookServices.delete(book.getId());
 
-                //Vuelvo a la vista principal
-                gotoPrincipal();
+                //Vuelvo a la lista
+                gotoList();
             }
         });
     }
 
-    private void book2Form() {
+    private void bookToForm() {
 
         found.setText("NOT FOUND");
         found.setVisibility((book.getFound()) ? View.INVISIBLE : View.VISIBLE);
-//        if (book.getFound()) {
-//            found.setVisibility(View.INVISIBLE);
-//        } else {
-//            found.setVisibility(View.VISIBLE);
-//        }
+
         if (validate(book.getTitle())) {
             title.setText(book.getTitle());
         }
@@ -155,5 +151,11 @@ public class BookDetailsActivity extends AppCompatActivity {
         Intent intent = new Intent(BookDetailsActivity.this, MainActivity.class);
         startActivity(intent);
     }
+
+    public void gotoList(){
+        Intent intent = new Intent(BookDetailsActivity.this, ListViewActivity.class);
+        startActivity(intent);
+    }
+
 
 }

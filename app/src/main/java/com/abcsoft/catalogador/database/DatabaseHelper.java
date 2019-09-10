@@ -37,6 +37,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_11_TAG ="PAGES";
     public static final String COL_12_TAG ="COVERLINK";
     public static final String COL_13_TAG ="FOUND";
+    public static final String COL_14_TAG ="NOTES";
 
     public static final String COL_0_TYPE ="INTEGER";
     public static final String COL_1_TYPE ="TEXT";  // ??
@@ -52,6 +53,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_11_TYPE ="INTEGER";
     public static final String COL_12_TYPE ="TEXT";
     public static final String COL_13_TYPE ="INTEGER";
+    public static final String COL_14_TYPE ="TEXT";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, 2);
@@ -76,10 +78,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 .append(COL_10_TAG).append(" ").append(COL_10_TYPE).append(", ")
                 .append(COL_11_TAG).append(" ").append(COL_11_TYPE).append(", ")
                 .append(COL_12_TAG).append(" ").append(COL_12_TYPE).append(", ")
-                .append(COL_13_TAG).append(" ").append(COL_13_TYPE)
+                .append(COL_13_TAG).append(" ").append(COL_13_TYPE).append(", ")
+                .append(COL_14_TAG).append(" ").append(COL_14_TYPE)
                 .append(");");
         db.execSQL(strSQL.toString());
-
     }
 
     @Override
@@ -186,9 +188,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(COL_11_TAG, book.getNumPages());
         contentValues.put(COL_12_TAG, book.getCoverLink());
         contentValues.put(COL_13_TAG, Utilidades.getIntegerFromBoolean(book.getFound()));
+        contentValues.put(COL_14_TAG, book.getNotes());
         return contentValues;
 
-        //TODO no guardo notes
     }
 
 
@@ -210,6 +212,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         book.setNumPages(cursor.getInt(11));
         book.setCoverLink(cursor.getString(12));
         book.setFound(Utilidades.getBooleanFromInteger(cursor.getInt(13)));
+        book.setNotes(cursor.getString(14));
         return book;
     }
 

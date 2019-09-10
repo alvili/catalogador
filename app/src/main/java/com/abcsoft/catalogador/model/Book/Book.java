@@ -31,7 +31,25 @@ public class Book implements Serializable {
     private double latitud;
 
     public Book() {
-        this.found = Boolean.FALSE; //opcion por defecto hasta que no tenga datos
+        this.found = Boolean.FALSE; //opción por defecto hasta que no tenga datos
+    }
+
+    public Book(String isbn) {
+        this.id = -1;
+        this.isbn = isbn;
+        this.title = "";
+        this.author = "";
+        this.publisher = "";
+        this.publishDate = "";
+        this.publishPlace = "";
+        this.coverLink = "";
+        this.numPages = 0;
+        this.price = 0.0;
+        this.notes = "";
+        this.found = Boolean.FALSE; //opción por defecto hasta que no tenga datos
+        this.dateCreation = new Date();
+        this.longitud = 0;
+        this.latitud = 0;
     }
 
     public void importFromopenLibrary(BookOpenLibrary bookinfo) {
@@ -88,22 +106,6 @@ public class Book implements Serializable {
         return b;
     }
 
-    public Bundle exportToBundleNotFound() {
-        Bundle b = new Bundle();
-        b.putLong("id", -1); //?? Cuando grabe en bbdd sera ella quien determinara el id para que sea único
-        b.putString("isbn", "");
-        b.putString("title", "");
-        b.putString("author", "");
-        b.putString("publisher", "");
-        b.putString("publishDate", "");
-        b.putString("publishPlace", "");
-        b.putString("coverLink", "");
-        b.putInt("numPags", 0);
-        b.putDouble("price", 0.0);
-        b.putString("notes", "");
-        b.putBoolean("found", Boolean.FALSE);
-        return b;
-    }
 
 
 

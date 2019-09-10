@@ -45,14 +45,14 @@ public class ScannerActivity extends AppCompatActivity {
         //4) Si ya existia, cargar datos de la bbdd
         //5) (preguntar? dar opcion?)
 
-
-        book = new Book();
-
         scan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                book = new Book(code.getText().toString());
+                //Verificar si ya existe
+
                 //Pido los datos al servicio REST de OpenLibrary
-                getRaw(code.getText().toString());
+                getRaw(book.getIsbn());
             }
         });
 
@@ -67,6 +67,7 @@ public class ScannerActivity extends AppCompatActivity {
 
         BooksAPI jsonPlaceHolderApi_books = RetrofitHelper.getBooksAPIsc();
         Call<String> call = jsonPlaceHolderApi_books.getRAW(params);
+        //https://openlibrary.org/api/books?format=json&bibkeys=ISBN%3A9788408085614&jscmd=data
 
         call.enqueue(new Callback<String>() {
 
@@ -78,9 +79,7 @@ public class ScannerActivity extends AppCompatActivity {
                     return;
                 }
 
-                //https://openlibrary.org/api/books?format=json&bibkeys=ISBN%3A9788408085614&jscmd=data
-
-                //Recupero los datos e inflo la vista
+                //Recupero los datos
                 String raw = response.body();
 
                 if (!raw.equals("{}")) {
@@ -96,7 +95,7 @@ public class ScannerActivity extends AppCompatActivity {
                     book.importFromopenLibrary(bookinfo);
                 }
                 //Cambio de activity
-                mostrarDetalles();
+                mostrarInformacion();
             }
 
             @Override
@@ -108,14 +107,10 @@ public class ScannerActivity extends AppCompatActivity {
 
     }
 
-    private void mostrarDetalles(){
+    private void mostrarInformacion(){
         //llamo a BookDetailsActivity pasandole los datos del libro en un intent
         Intent intent = new Intent(ScannerActivity.this, BookDetailsActivity.class);
-        if (book.getFound()){
-            intent.putExtras(book.exportToBundle());
-        } else {
-            intent.putExtras(book.exportToBundleNotFound());
-        }
+        intent.putExtras(book.exportToBundle());
         startActivity(intent);
     }
 
