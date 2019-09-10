@@ -45,6 +45,7 @@ public class ListViewActivity  extends AppCompatActivity {
                 Intent intent = new Intent(ListViewActivity.this, BookDetailsActivity.class);
 //                intent.putExtras(books.get(position).exportToBundle());
                 intent.putExtras(booksServices.read(books.get(position).getId()).exportToBundle());
+                intent.putExtra("ORIGIN","list");
                 startActivity(intent);
             }
         });

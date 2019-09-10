@@ -54,11 +54,15 @@ public class BookDetailsActivity extends AppCompatActivity {
         guardar = (Button) findViewById(R.id.idBtnGuardarLibro);
         borrar = (Button) findViewById(R.id.idBtnBorrarLibro);
 
+
+        bookServices = new BooksServicesSQLite(getApplicationContext());
+
         //Recogemos los datos enviados por el intent
         book.importFromBundle(getIntent().getExtras());
 
         //Traslado los datos a los campos
-        bookToForm();
+        bookToForm(getIntent().getExtras().getString("ORIGEN"));
+        //TODO recuperar datos de ORIGEN
 
         guardar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,7 +79,7 @@ public class BookDetailsActivity extends AppCompatActivity {
         borrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //borra l'element
+                //borra el elemento
                 bookServices.delete(book.getId());
 
                 //Vuelvo a la lista
@@ -84,10 +88,25 @@ public class BookDetailsActivity extends AppCompatActivity {
         });
     }
 
-    private void bookToForm() {
+    private void bookToForm(String ORIGEN) {
 
         found.setText("NOT FOUND");
         found.setVisibility((book.getFound()) ? View.INVISIBLE : View.VISIBLE);
+
+        switch(ORIGEN) {
+            case "scan":
+                guardar.setText("SAVE");
+                borrar.setVisibility(View.INVISIBLE);
+                break;
+            case "list":
+                guardar.setText("UPDATE");
+                borrar.setVisibility(View.VISIBLE);
+                break;
+            default:
+                break;
+        }
+
+
 
         if (validate(book.getTitle())) {
             title.setText(book.getTitle());
@@ -143,7 +162,7 @@ public class BookDetailsActivity extends AppCompatActivity {
     }
 
     public void bookToBBDD() {
-        bookServices = new BooksServicesSQLite(getApplicationContext());
+//        bookServices = new BooksServicesSQLite(getApplicationContext());
         bookServices.create(book);
     }
 

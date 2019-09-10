@@ -111,6 +111,7 @@ public class ScannerActivity extends AppCompatActivity {
         //llamo a BookDetailsActivity pasandole los datos del libro en un intent
         Intent intent = new Intent(ScannerActivity.this, BookDetailsActivity.class);
         intent.putExtras(book.exportToBundle());
+        intent.putExtra("ORIGIN","scan");
         startActivity(intent);
     }
 
