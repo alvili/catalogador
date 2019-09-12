@@ -61,8 +61,7 @@ public class BookDetailsActivity extends AppCompatActivity {
         book.importFromBundle(getIntent().getExtras());
 
         //Traslado los datos a los campos
-        bookToForm(getIntent().getExtras().getString("ORIGEN"));
-        //TODO recuperar datos de ORIGEN
+        bookToForm(getIntent().getExtras().getString("ORIGIN"));
 
         guardar.setOnClickListener(new View.OnClickListener() {
             @Override

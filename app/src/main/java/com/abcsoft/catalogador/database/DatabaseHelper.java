@@ -4,7 +4,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
 
 import com.abcsoft.catalogador.model.Book.Book;
 import com.abcsoft.catalogador.services.Utilidades;
@@ -55,6 +57,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_13_TYPE ="INTEGER";
     public static final String COL_14_TYPE ="TEXT";
 
+    public static final String TABLE2_NAME = "IMAGES";
+    public static final String COL2_0_TAG ="ID";
+    public static final String COL2_1_TAG ="LINK";
+    public static final String COL2_2_TAG ="IMAGE";
+    public static final String COL2_0_TYPE ="INTEGER";
+    public static final String COL2_1_TYPE ="TEXT";
+    public static final String COL2_2_TYPE ="BLOB";
+
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, 2);
     }
@@ -63,7 +74,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         StringBuilder strSQL = new StringBuilder();
-        //Revisar la estructura
+        //Tabla 1
         strSQL.append("CREATE TABLE ").append(TABLE_NAME).append(" (")
                 .append(COL_0_TAG).append(" ").append(COL_0_TYPE).append(" PRIMARY KEY AUTOINCREMENT, ") //.append(" PRIMARY KEY AUTOINCREMENT, ")
                 .append(COL_1_TAG).append(" ").append(COL_1_TYPE).append(", ") //.append(" NOT NULL, ")
@@ -81,6 +92,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 .append(COL_13_TAG).append(" ").append(COL_13_TYPE).append(", ")
                 .append(COL_14_TAG).append(" ").append(COL_14_TYPE)
                 .append(");");
+
+        //Tabla 2
+        strSQL.append("CREATE TABLE ").append(TABLE2_NAME).append(" (")
+                .append(COL2_0_TAG).append(" ").append(COL2_0_TYPE).append(" PRIMARY KEY AUTOINCREMENT, ") //.append(" PRIMARY KEY AUTOINCREMENT, ")
+                .append(COL2_1_TAG).append(" ").append(COL2_1_TYPE).append(", ")
+                .append(COL2_2_TAG).append(" ").append(COL2_2_TYPE)
+                .append(");");
+
         db.execSQL(strSQL.toString());
     }
 
@@ -163,6 +182,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return cursorToBookList(cursor);
     }
 
+    public Long insertImage( String imageLink) throws SQLiteException {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Bitmap b = Utilidades.getBitmapFromURL(imageLink);
+        byte[] image = Utilidades.getBytes(b);
+
+        ContentValues cv = new  ContentValues();
+        cv.put(COL2_1_TAG, imageLink);
+        cv.put(COL2_2_TAG, image);
+
+        long id = db.insert(TABLE2_NAME,null, cv);
+        db.close();
+
+        return id == -1 ? null : id;
+    }
+
+
+
+
 
 //***************************************************************************************
 //************************                                     **************************
@@ -171,7 +210,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //***************************************************************************************
 
 
-    //Conveirte los tipos de java a sqlite y transiere los campos de book a un contenedor de valores
+    //Conveirte los tipos de java a sqlite y transfiere los campos de book a un contenedor de valores
     private ContentValues book2contentvalues(Book book){
         //Creo un contenedor de valores y transformo los campos de book a los tipos de sqlite
         ContentValues contentValues = new ContentValues();
@@ -189,11 +228,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(COL_12_TAG, book.getCoverLink());
         contentValues.put(COL_13_TAG, Utilidades.getIntegerFromBoolean(book.getFound()));
         contentValues.put(COL_14_TAG, book.getNotes());
+        insertImage(book.getCoverLink()); //guardar la id que devuelve
         return contentValues;
-
     }
-
-
 
     //Convierte un cursor de la tabla lecturas a una List de Books
     private Book cursor2book(Cursor cursor){
