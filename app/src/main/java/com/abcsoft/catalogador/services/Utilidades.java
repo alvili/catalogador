@@ -96,7 +96,8 @@ public class Utilidades {
     public static Bitmap getBitmapFromURL(String src) {
 
         ImageDownloadTask idt = new ImageDownloadTask();
-        idt.doInBackground(src);
+//        Bitmap b = idt.doInBackground(src);
+        idt.execute(src);
 
         return null;
 

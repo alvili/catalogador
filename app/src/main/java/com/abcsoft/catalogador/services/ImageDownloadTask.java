@@ -17,22 +17,20 @@ import static android.content.ContentValues.TAG;
 
 class ImageDownloadTask extends AsyncTask<String, Void, Bitmap> {
 
-    private ImageView imageView;
+//    private ImageView imageView;
     private InputStream in;
     long inTime;
     long completeTime;
 
-
     public ImageDownloadTask() {
     }
 
-    public ImageDownloadTask(ImageView imageView) {
-        this.imageView = imageView;
-    }
+//    public ImageDownloadTask(ImageView imageView) {
+//        this.imageView = imageView;
+//    }
 
     @Override
     protected Bitmap doInBackground(String ... params) {
-//    protected Bitmap doInBackground(String... params) {
 
         Bitmap bitmap = null;
 

@@ -21,92 +21,75 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "catalogador.db";
     //path -> data/data/com.abcsoft.catalogador/databases/catalogador.db
 
-    //Nombre de la tabla
-    public static final String TABLE_NAME = "BOOKS";
+    public static final String T_BOOKS = "BOOKS";
+    public static final String[][] T_BOOKS_FIELDS = {
+            {"ID","INTEGER","PRIMARY KEY AUTOINCREMENT"},
+            {"DATE","TEXT",""},
+            {"TITLE","TEXT",""},
+            {"AUTHOR","TEXT",""},
+            {"ISBN","TEXT",""},
+            {"PUBLISHER","TEXT",""},
+            {"YEAR","TEXT",""},
+            {"PRICE","TEXT",""},
+            {"LONGITUD","TEXT",""},
+            {"LATITUD","TEXT",""},
+            {"PLACE","TEXT",""},
+            {"PAGES","INTEGER",""},
+            {"COVERLINK","TEXT",""},
+            {"FOUND","INTEGER",""},
+            {"NOTES","TEXT",""}
+    };
 
-    //Columnas de la tabla
-    public static final String COL_0_TAG ="ID";
-    public static final String COL_1_TAG ="DATE";
-    public static final String COL_2_TAG ="TITLE";
-    public static final String COL_3_TAG ="AUTHOR";
-    public static final String COL_4_TAG ="ISBN";
-    public static final String COL_5_TAG ="PUBLISHER";
-    public static final String COL_6_TAG ="YEAR";
-    public static final String COL_7_TAG ="PRICE";
-    public static final String COL_8_TAG ="LONGITUD";
-    public static final String COL_9_TAG ="LATITUD";
-    public static final String COL_10_TAG ="PLACE";
-    public static final String COL_11_TAG ="PAGES";
-    public static final String COL_12_TAG ="COVERLINK";
-    public static final String COL_13_TAG ="FOUND";
-    public static final String COL_14_TAG ="NOTES";
+    //Tabla carátulas
+    public static final String T_COVERS = "COVERS";
+    public static final String[][] T_COVERS_FIELDS = {
+//            {"ID","INTEGER","PRIMARY KEY AUTOINCREMENT"},
+            {"LINK","TEXT",""},
+            {"IMAGE","BLOB",""}
+    };
 
-    public static final String COL_0_TYPE ="INTEGER";
-    public static final String COL_1_TYPE ="TEXT";  // ??
-    public static final String COL_2_TYPE ="TEXT";
-    public static final String COL_3_TYPE ="TEXT";
-    public static final String COL_4_TYPE ="TEXT";
-    public static final String COL_5_TYPE ="TEXT";
-    public static final String COL_6_TYPE ="TEXT";
-    public static final String COL_7_TYPE ="REAL";
-    public static final String COL_8_TYPE ="REAL";
-    public static final String COL_9_TYPE ="REAL";
-    public static final String COL_10_TYPE ="TEXT";
-    public static final String COL_11_TYPE ="INTEGER";
-    public static final String COL_12_TYPE ="TEXT";
-    public static final String COL_13_TYPE ="INTEGER";
-    public static final String COL_14_TYPE ="TEXT";
-
-    public static final String TABLE2_NAME = "IMAGES";
-    public static final String COL2_0_TAG ="ID";
-    public static final String COL2_1_TAG ="LINK";
-    public static final String COL2_2_TAG ="IMAGE";
-    public static final String COL2_0_TYPE ="INTEGER";
-    public static final String COL2_1_TYPE ="TEXT";
-    public static final String COL2_2_TYPE ="BLOB";
+    //Tabla carátulas
+    public static final String T_BOOKS_COVERS = "BOOKS_COVERS";
+    public static final String[][] T_BOOKS_COVERS_FIELDS = {
+//            {"ID","INTEGER","PRIMARY KEY AUTOINCREMENT"},
+            {"bookID","INTEGER","NOT NULL"},
+            {"coverID","INTEGER","NOT NULL"}
+    };
+    public static final String[][] T_BOOKS_COVERS_KEYS = {
+            {"bookID",T_BOOKS,T_BOOKS_FIELDS[0][0]},
+            {"coverID",T_COVERS,T_COVERS_FIELDS[0][0]}
+    };
 
 
     public DatabaseHelper(Context context) {
-        super(context, DATABASE_NAME, null, 2);
+        super(context, DATABASE_NAME, null, 1);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-
+        //Crea las tablas vacias
         StringBuilder strSQL = new StringBuilder();
-        //Tabla 1
-        strSQL.append("CREATE TABLE ").append(TABLE_NAME).append(" (")
-                .append(COL_0_TAG).append(" ").append(COL_0_TYPE).append(" PRIMARY KEY AUTOINCREMENT, ") //.append(" PRIMARY KEY AUTOINCREMENT, ")
-                .append(COL_1_TAG).append(" ").append(COL_1_TYPE).append(", ") //.append(" NOT NULL, ")
-                .append(COL_2_TAG).append(" ").append(COL_2_TYPE).append(", ")
-                .append(COL_3_TAG).append(" ").append(COL_3_TYPE).append(", ")
-                .append(COL_4_TAG).append(" ").append(COL_4_TYPE).append(", ") //.append(" NOT NULL, ")
-                .append(COL_5_TAG).append(" ").append(COL_5_TYPE).append(", ")
-                .append(COL_6_TAG).append(" ").append(COL_6_TYPE).append(", ")
-                .append(COL_7_TAG).append(" ").append(COL_7_TYPE).append(", ")
-                .append(COL_8_TAG).append(" ").append(COL_8_TYPE).append(", ")
-                .append(COL_9_TAG).append(" ").append(COL_9_TYPE).append(", ")
-                .append(COL_10_TAG).append(" ").append(COL_10_TYPE).append(", ")
-                .append(COL_11_TAG).append(" ").append(COL_11_TYPE).append(", ")
-                .append(COL_12_TAG).append(" ").append(COL_12_TYPE).append(", ")
-                .append(COL_13_TAG).append(" ").append(COL_13_TYPE).append(", ")
-                .append(COL_14_TAG).append(" ").append(COL_14_TYPE)
-                .append(");");
 
-        //Tabla 2
-        strSQL.append("CREATE TABLE ").append(TABLE2_NAME).append(" (")
-                .append(COL2_0_TAG).append(" ").append(COL2_0_TYPE).append(" PRIMARY KEY AUTOINCREMENT, ") //.append(" PRIMARY KEY AUTOINCREMENT, ")
-                .append(COL2_1_TAG).append(" ").append(COL2_1_TYPE).append(", ")
-                .append(COL2_2_TAG).append(" ").append(COL2_2_TYPE)
-                .append(");");
+        strSQL.append(sqlCreateTable(T_BOOKS, T_BOOKS_FIELDS));
+        strSQL.append(" ");
+        strSQL.append(sqlCreateTable(T_COVERS, T_COVERS_FIELDS));
+        strSQL.append(" ");
+        strSQL.append(sqlCreateTable(T_BOOKS_COVERS, T_BOOKS_COVERS_FIELDS, T_BOOKS_COVERS_KEYS));
 
         db.execSQL(strSQL.toString());
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME); //Elimina la tabla
-        onCreate(db); //Reconstruye la tabla desde 0. Adios a los datos
+        //Elimina las tablas actuales. Adios a los datos
+        StringBuilder strSQL = new StringBuilder();
+
+        strSQL.append(sqlDropTable(T_BOOKS));
+        strSQL.append(" ");
+        strSQL.append(sqlDropTable(T_COVERS));
+
+        db.execSQL(strSQL.toString());
+        onCreate(db); //Reconstruye las tablas desde cero
     }
 
     public Book createBook(Book book){
@@ -116,7 +99,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //CON db.beginTransaction() no guarda datos a la bbdd
 //        db.beginTransaction();//Inicia transaccion.Sirve para garantizar la consistencia de la bbdd en caso de problemas
 
-        long id = db.insert(TABLE_NAME,null, book2contentvalues(book));
+        long id = db.insert(T_BOOKS,null, book2contentvalues(book));
         //db.insert devulve un long correspondiente al número de registros. Equivale al codigo
         //nullColumnHack se utiliza cuando queremos insertar un registro con valores null
 
@@ -135,7 +118,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //Modifica el libro con un id concreto
         SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura. Si la bbdd no existe, la crea
         //Mediante rawQuery
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + COL_0_TAG + "=" + id, null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + T_BOOKS + " WHERE " + T_BOOKS_FIELDS[0][0] + "=" + id, null);
+//        Cursor cursor = db.rawQuery("SELECT * FROM " + T_BOOKS + " WHERE " + T_BOOKS_PARAMS[0][0]COL_0_TAG + "=" + id, null);
         Book book = cursorToBook(cursor);
         db.close();
         return book;
@@ -144,7 +128,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Book updateBook(Book book){
         //Modifica el libro con un id concreto
         SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura. Si la bbdd no existe, la crea
-        db.update(TABLE_NAME, book2contentvalues(book), COL_0_TAG + "=" + book.getId(), null);
+        db.update(T_BOOKS, book2contentvalues(book), T_BOOKS_FIELDS[0][0] + "=" + book.getId(), null);
         db.close();
         //TODO return?
         return book;
@@ -152,7 +136,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public Boolean deleteBook(Long id){
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_NAME, COL_0_TAG + "=" + id, null);
+        db.delete(T_BOOKS, T_BOOKS_FIELDS[0][0] + "=" + id, null);
 //        //Mediante rawQuery
 //        Cursor cursor = db.rawQuery("DELETE FROM " + TABLE_NAME + " WHERE " + COL_0_TAG + " ='" + id + "'", null);
         //TODO return?
@@ -163,7 +147,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         //Mediante rawQuery
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " ORDER BY " + COL_1_TAG + " ASC", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + T_BOOKS + " ORDER BY " + T_BOOKS_FIELDS[1][0] + " ASC", null);
         //TODO Pedir solo los campos basicos. pero afecta a cursor 2 book
 
         /*
@@ -190,10 +174,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         byte[] image = Utilidades.getBytes(b);
 
         ContentValues cv = new  ContentValues();
-        cv.put(COL2_1_TAG, imageLink);
-        cv.put(COL2_2_TAG, image);
+        cv.put(T_COVERS_FIELDS[1][0], imageLink);
+        cv.put(T_COVERS_FIELDS[2][0], image);
 
-        long id = db.insert(TABLE2_NAME,null, cv);
+        long id = db.insert(T_COVERS,null, cv);
         db.close();
 
         return id == -1 ? null : id;
@@ -214,20 +198,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private ContentValues book2contentvalues(Book book){
         //Creo un contenedor de valores y transformo los campos de book a los tipos de sqlite
         ContentValues contentValues = new ContentValues();
-        contentValues.put(COL_1_TAG, Utilidades.getStringFromDate(book.getDateCreation()));
-        contentValues.put(COL_2_TAG, book.getTitle());
-        contentValues.put(COL_3_TAG, book.getAuthor());
-        contentValues.put(COL_4_TAG, book.getIsbn());
-        contentValues.put(COL_5_TAG, book.getPublisher());
-        contentValues.put(COL_6_TAG, book.getPublishDate());
-        contentValues.put(COL_7_TAG, book.getPrice());
-        contentValues.put(COL_8_TAG, book.getLongitud());
-        contentValues.put(COL_9_TAG, book.getLatitud());
-        contentValues.put(COL_10_TAG, book.getPublishPlace());
-        contentValues.put(COL_11_TAG, book.getNumPages());
-        contentValues.put(COL_12_TAG, book.getCoverLink());
-        contentValues.put(COL_13_TAG, Utilidades.getIntegerFromBoolean(book.getFound()));
-        contentValues.put(COL_14_TAG, book.getNotes());
+        contentValues.put(T_BOOKS_FIELDS[1][0], Utilidades.getStringFromDate(book.getDateCreation()));
+        contentValues.put(T_BOOKS_FIELDS[2][0], book.getTitle());
+        contentValues.put(T_BOOKS_FIELDS[3][0], book.getAuthor());
+        contentValues.put(T_BOOKS_FIELDS[4][0], book.getIsbn());
+        contentValues.put(T_BOOKS_FIELDS[5][0], book.getPublisher());
+        contentValues.put(T_BOOKS_FIELDS[6][0], book.getPublishDate());
+        contentValues.put(T_BOOKS_FIELDS[7][0], book.getPrice());
+        contentValues.put(T_BOOKS_FIELDS[8][0], book.getLongitud());
+        contentValues.put(T_BOOKS_FIELDS[9][0], book.getLatitud());
+        contentValues.put(T_BOOKS_FIELDS[10][0], book.getPublishPlace());
+        contentValues.put(T_BOOKS_FIELDS[11][0], book.getNumPages());
+        contentValues.put(T_BOOKS_FIELDS[12][0], book.getCoverLink());
+        contentValues.put(T_BOOKS_FIELDS[13][0], Utilidades.getIntegerFromBoolean(book.getFound()));
+        contentValues.put(T_BOOKS_FIELDS[14][0], book.getNotes());
         insertImage(book.getCoverLink()); //guardar la id que devuelve
         return contentValues;
     }
@@ -295,5 +279,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return books;
     }
 
+
+
+    private String sqlCreateTable(String table_name, String[][] table_fields){
+        StringBuilder strSQL = new StringBuilder();
+        strSQL.append("CREATE TABLE IF NOT EXISTS ").append(table_name).append(" (");
+        for (int i=0;i<table_fields.length;i++){
+            strSQL.append(table_fields[i][0]).append(" ").append(table_fields[i][1]).append(" ").append(table_fields[i][2]);
+            strSQL.append(( i < table_fields.length-1 ) ? ", " : "");
+        }
+        strSQL.append(");");
+        return strSQL.toString();
+    }
+
+    private String sqlCreateTable(String table_name, String[][] table_fields, String[][] table_keys){
+        StringBuilder strSQL = new StringBuilder();
+        strSQL.append("CREATE TABLE IF NOT EXISTS ").append(table_name).append(" (");
+        for (int i=0;i<table_fields.length;i++){
+            strSQL.append(table_fields[i][0]).append(" ").append(table_fields[i][1]).append(" ").append(table_fields[i][2]);
+            strSQL.append(", ");
+        }
+        for (int i=0;i<table_keys.length;i++){
+            strSQL.append("FOREIGN KEY(").append(table_keys[i][0]).append(") REFERENCES ").append(table_keys[i][1]).append("(").append(table_keys[i][2]).append(")");
+            strSQL.append(( i < table_keys.length-1 ) ? ", " : "");
+        }
+        strSQL.append(");");
+        return strSQL.toString();
+    }
+
+    private String sqlDropTable(String table_name){
+        return "DROP TABLE IF EXISTS " + table_name; //Elimina la tabla
+    }
 
 }

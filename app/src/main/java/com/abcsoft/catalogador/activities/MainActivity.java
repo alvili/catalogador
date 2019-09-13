@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 //        Utilidades.getBitmapFromURL("https://covers.openlibrary.org/b/id/8738451-L.jpg");
-        Utilidades.getBitmapFromURL("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3jbh9qdb7M7z8fHRDtVv8wqze-ECJnlX7BP_Qafh9iJAqfiOW");
+//        Utilidades.getBitmapFromURL("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3jbh9qdb7M7z8fHRDtVv8wqze-ECJnlX7BP_Qafh9iJAqfiOW");
         Button escanear = findViewById(R.id.idBtnEscanear);
         Button catalogo = findViewById(R.id.idBtnCatalogo);
         Button sync = findViewById(R.id.idBtnSync);
