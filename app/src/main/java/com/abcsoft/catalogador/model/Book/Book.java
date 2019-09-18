@@ -1,5 +1,6 @@
 package com.abcsoft.catalogador.model.Book;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import com.abcsoft.catalogador.model.BookAPI.BookOpenLibrary;
@@ -18,6 +19,7 @@ public class Book implements Serializable {
     private String publishDate;
     private int numPages;
     private String coverLink;
+    private Bitmap cover;
 
     //personal info
     private double price;
@@ -43,6 +45,7 @@ public class Book implements Serializable {
         this.publishDate = "";
         this.publishPlace = "";
         this.coverLink = "";
+        this.cover = null;
         this.numPages = 0;
         this.price = 0.0;
         this.notes = "";
@@ -229,5 +232,13 @@ public class Book implements Serializable {
 
     public void setFound(Boolean found) {
         this.found = found;
+    }
+
+    public Bitmap getCover() {
+        return cover;
+    }
+
+    public void setCover(Bitmap cover) {
+        this.cover = cover;
     }
 }

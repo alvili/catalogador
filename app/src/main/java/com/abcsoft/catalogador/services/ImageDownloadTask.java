@@ -6,18 +6,19 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.abcsoft.catalogador.model.Book.Book;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static android.content.ContentValues.TAG;
 
+public class ImageDownloadTask extends AsyncTask<String, Void, Bitmap> {
 
-class ImageDownloadTask extends AsyncTask<String, Void, Bitmap> {
-
-//    private ImageView imageView;
+    private ImageView imageView;
+    private Book book;
     private InputStream in;
     long inTime;
     long completeTime;
@@ -25,12 +26,13 @@ class ImageDownloadTask extends AsyncTask<String, Void, Bitmap> {
     public ImageDownloadTask() {
     }
 
-//    public ImageDownloadTask(ImageView imageView) {
-//        this.imageView = imageView;
-//    }
+    public ImageDownloadTask(ImageView imageView, Book book) {
+        this.imageView = imageView;
+        this.book = book;
+    }
 
     @Override
-    protected Bitmap doInBackground(String ... params) {
+    protected Bitmap doInBackground(String... params) {
 
         Bitmap bitmap = null;
 
@@ -62,7 +64,9 @@ class ImageDownloadTask extends AsyncTask<String, Void, Bitmap> {
     @Override
     protected void onPostExecute(Bitmap bitmap) {
         completeTime = System.currentTimeMillis() - inTime;
-//        imageView.setImageBitmap(bitmap);
-        Log.d(TAG, "Duration for decode the Full Size Bitmap is " + completeTime);
+        imageView.setImageBitmap(bitmap);
+        book.setCover(bitmap);
+        Log.d("***", "Duration for decode the Full Size Bitmap is " + completeTime);
+
     }
 }

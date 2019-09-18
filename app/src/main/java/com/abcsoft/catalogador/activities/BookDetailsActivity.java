@@ -11,6 +11,8 @@ import android.widget.TextView;
 import com.abcsoft.catalogador.R;
 import com.abcsoft.catalogador.model.Book.Book;
 import com.abcsoft.catalogador.services.BooksServicesSQLite;
+import com.abcsoft.catalogador.services.ImageDownloadTask;
+import com.abcsoft.catalogador.services.Utilidades;
 import com.squareup.picasso.Picasso;
 
 import java.util.Date;
@@ -129,7 +131,11 @@ public class BookDetailsActivity extends AppCompatActivity {
         numPags.setText(String.valueOf(book.getNumPages()));
         if (validate(book.getCoverLink())) {
             if (!book.getCoverLink().equals("")) {
-                Picasso.get().load(book.getCoverLink()).into(cover);
+                //Picasso.get().load(book.getCoverLink()).into(cover);
+
+
+                ImageDownloadTask miAsyncTask = new ImageDownloadTask(cover, book);
+                miAsyncTask.execute(book.getCoverLink());
             }
         }
         price.setText(String.valueOf(book.getPrice()));

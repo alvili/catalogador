@@ -48,7 +48,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             {"IMAGE","BLOB",""}
     };
 
-    //Tabla carátulas
+    //Tabla relacional
     public static final String T_BOOKS_COVERS = "BOOKS_COVERS";
     public static final String[][] T_BOOKS_COVERS_FIELDS = {
 //            {"ID","INTEGER","PRIMARY KEY AUTOINCREMENT"},
@@ -102,6 +102,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long id = db.insert(T_BOOKS,null, book2contentvalues(book));
         //db.insert devulve un long correspondiente al número de registros. Equivale al codigo
         //nullColumnHack se utiliza cuando queremos insertar un registro con valores null
+
+        byte[] image = Utilidades.getBytes(book.getCover());
+
+        ContentValues cv = new  ContentValues();
+        cv.put(T_COVERS_FIELDS[0][0], book.getCoverLink());
+        cv.put(T_COVERS_FIELDS[1][0], image);
+
+        long id2 = db.insert(T_COVERS,null, cv);
+
+        //TODO LIMPIAR ESTO!!
 
 //        db.endTransaction(); //Cierra el beginTransaction
         db.close();
@@ -166,22 +176,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return cursorToBookList(cursor);
     }
 
-    public Long insertImage( String imageLink) throws SQLiteException {
-
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        Bitmap b = Utilidades.getBitmapFromURL(imageLink);
-        byte[] image = Utilidades.getBytes(b);
-
-        ContentValues cv = new  ContentValues();
-        cv.put(T_COVERS_FIELDS[1][0], imageLink);
-        cv.put(T_COVERS_FIELDS[2][0], image);
-
-        long id = db.insert(T_COVERS,null, cv);
-        db.close();
-
-        return id == -1 ? null : id;
-    }
+//    public Long insertImage( String imageLink) throws SQLiteException {
+//
+//        SQLiteDatabase db = this.getWritableDatabase();
+//
+//
+//        Bitmap b = Utilidades.getBitmapFromURL(imageLink);
+//        byte[] image = Utilidades.getBytes(b);
+//
+//        ContentValues cv = new  ContentValues();
+//        cv.put(T_COVERS_FIELDS[1][0], imageLink);
+//        cv.put(T_COVERS_FIELDS[2][0], image);
+//
+//        long id = db.insert(T_COVERS,null, cv);
+//        db.close();
+//
+//        return id == -1 ? null : id;
+//    }
 
 
 
@@ -212,7 +223,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(T_BOOKS_FIELDS[12][0], book.getCoverLink());
         contentValues.put(T_BOOKS_FIELDS[13][0], Utilidades.getIntegerFromBoolean(book.getFound()));
         contentValues.put(T_BOOKS_FIELDS[14][0], book.getNotes());
-        insertImage(book.getCoverLink()); //guardar la id que devuelve
+//        insertImage(book.getCoverLink()); //guardar la id que devuelve
         return contentValues;
     }
 
