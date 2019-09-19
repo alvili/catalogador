@@ -48,7 +48,7 @@ public class BooksAdapter extends BaseAdapter {
 
         //Construyo el contenido
         title.setText(books.get(position).getTitle());
-        scanDate.setText(Utilidades.getStringFromDate(books.get(position).getDateCreation()));
+//        scanDate.setText(Utilidades.getStringFromDate(books.get(position).getDateCreation()));
         return view;
     }
 }

@@ -4,9 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ImageView;
 
-import com.abcsoft.catalogador.model.Book.Book;
+import com.abcsoft.catalogador.model.ScanDetails;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,8 +16,9 @@ import java.net.URL;
 
 public class ImageDownloadTask extends AsyncTask<String, Void, Bitmap> {
 
-    private ImageView imageView;
-    private Book book;
+//    private ImageView imageView;
+//    private Book book;
+    private ScanDetails scan;
     private InputStream in;
     long inTime;
     long completeTime;
@@ -26,9 +26,10 @@ public class ImageDownloadTask extends AsyncTask<String, Void, Bitmap> {
     public ImageDownloadTask() {
     }
 
-    public ImageDownloadTask(ImageView imageView, Book book) {
-        this.imageView = imageView;
-        this.book = book;
+    public ImageDownloadTask(ScanDetails scan) {
+//        this.imageView = imageView;
+//        this.book = book;
+        this.scan = scan;
     }
 
     @Override
@@ -64,8 +65,9 @@ public class ImageDownloadTask extends AsyncTask<String, Void, Bitmap> {
     @Override
     protected void onPostExecute(Bitmap bitmap) {
         completeTime = System.currentTimeMillis() - inTime;
-        imageView.setImageBitmap(bitmap);
-        book.setCover(bitmap);
+//        imageView.setImageBitmap(bitmap);
+//        book.setImage(bitmap);
+        scan.getBook().getCover().setImage(bitmap);
         Log.d("***", "Duration for decode the Full Size Bitmap is " + completeTime);
 
     }

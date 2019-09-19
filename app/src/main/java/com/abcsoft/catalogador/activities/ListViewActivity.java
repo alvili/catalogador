@@ -44,7 +44,9 @@ public class ListViewActivity  extends AppCompatActivity {
                 //Lanzo un intent y transfiero detalles del libro en un bundle
                 Intent intent = new Intent(ListViewActivity.this, BookDetailsActivity.class);
 //                intent.putExtras(books.get(position).exportToBundle());
-                intent.putExtras(booksServices.read(books.get(position).getId()).exportToBundle());
+                Bundle b = new Bundle();
+                booksServices.read(books.get(position).getId()).exportToBundle(b);
+                intent.putExtras(b);
                 intent.putExtra("ORIGIN","list");
                 startActivity(intent);
             }

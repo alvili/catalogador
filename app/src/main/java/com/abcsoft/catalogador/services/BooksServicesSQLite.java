@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.abcsoft.catalogador.database.DatabaseHelper;
 import com.abcsoft.catalogador.model.Book.Book;
+import com.abcsoft.catalogador.model.ScanDetails;
 
 import java.util.List;
 
@@ -17,18 +18,18 @@ public class BooksServicesSQLite implements BooksServices {
 
 
     @Override
-    public Book create(Book book) {
-        return myDB.createBook(book);
+    public ScanDetails create(ScanDetails scan) {
+        return myDB.createBook(scan);
     }
 
     @Override
-    public Book read(Long id) {
+    public ScanDetails read(Long id) {
         return myDB.readBook(id);
     }
 
     @Override
-    public Book update(Book book) {
-        return myDB.updateBook(book);
+    public ScanDetails update(ScanDetails scan) {
+        return myDB.updateBook(scan);
     }
 
     @Override
@@ -37,7 +38,7 @@ public class BooksServicesSQLite implements BooksServices {
     }
 
     @Override
-    public List<Book> getAll() {
+    public List<ScanDetails> getAll() {
         return myDB.getAll();
     }
 }
