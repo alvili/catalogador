@@ -1,16 +1,9 @@
 package com.abcsoft.catalogador.services;
 
-import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.Build;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -44,7 +37,9 @@ public class Utilidades {
         return (str != null && !str.isEmpty()) ? str : "";
     }
 
-
+//    private boolean validate(String str) {
+//        return (str != null && !str.isEmpty());
+//    }
 
 
 //    //Convert and resize our image to 400dp for faster uploading our images to DB
@@ -84,8 +79,17 @@ public class Utilidades {
 //        return null;
 //    }
 
+
+    //Convert from bitmap to byte array
+//    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
+    public static byte[] getBytes(Bitmap b){
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        b.compress(Bitmap.CompressFormat.PNG, 0, bos);
+        return bos.toByteArray();
+    }
+
     // convert from byte array to bitmap
-    public static Bitmap getImage(byte[] image) {
+    public static Bitmap getBitmap(byte[] image) {
         return BitmapFactory.decodeByteArray(image, 0, image.length);
     }
 
@@ -93,35 +97,7 @@ public class Utilidades {
         return BitmapFactory.decodeFile(filePath);
     }
 
-    public static Bitmap getBitmapFromURL(String src) {
 
-        ImageDownloadTask idt = new ImageDownloadTask();
-//        Bitmap b = idt.doInBackground(src);
-        idt.execute(src);
-
-        return null;
-
-        //        try {
-//            URL url = new URL(src);
-//            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-//            connection.setDoInput(true);
-//            connection.connect();
-//            InputStream input = connection.getInputStream();
-//            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-//            return myBitmap;
-//        } catch (IOException e) {
-//            // Log exception
-//            return null;
-//        }
-    }
-
-    //Convert bitmap to byte array
-//    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
-    public static byte[] getBytes(Bitmap b){
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        b.compress(Bitmap.CompressFormat.PNG, 0, bos);
-        return bos.toByteArray();
-    }
 
 
 

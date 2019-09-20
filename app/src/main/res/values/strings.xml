@@ -3,7 +3,7 @@
     <string name="catalogo">BROWSE</string>
     <string name="scan">NEW SCAN</string>
     <string name="sync">SYNC DATABASE</string>
-    <string name="guardar">SAVE</string>
+    <string name="create">SAVE NEW</string>
     <string name="title">Title:</string>
     <string name="date">Date:</string>
     <string name="publisher">Publisher:</string>
@@ -13,4 +13,7 @@
     <string name="notes">Notes:</string>
     <string name="place">Place:</string>
     <string name="delete">DELETE</string>
+    <string name="notfound">NOT FOUND</string>
+    <string name="update">UPDATE</string>
+    <string name="alreadyscanned">ALREADY SCANNED</string>
 </resources>

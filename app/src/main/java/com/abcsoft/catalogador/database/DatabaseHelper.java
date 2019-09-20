@@ -4,13 +4,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.Bitmap;
 
-import com.abcsoft.catalogador.model.Book.Book;
-import com.abcsoft.catalogador.model.Book.Cover;
-import com.abcsoft.catalogador.model.ScanDetails;
+import com.abcsoft.catalogador.model.Local.Cover;
+import com.abcsoft.catalogador.model.Local.Scan;
 import com.abcsoft.catalogador.services.Utilidades;
 
 import java.util.ArrayList;
@@ -23,23 +20,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "catalogador.db";
     //path -> data/data/com.abcsoft.catalogador/databases/catalogador.db
 
+    public static final String T_SCANS = "SCANS";
+    public static final String[][] T_SCANS_FIELDS = {
+            {"ID","INTEGER","PRIMARY KEY AUTOINCREMENT"},
+            {"BARCODE","TEXT",""},
+            {"CREATED","TEXT",""},
+            {"MODIFIED","TEXT",""}
+            {"FOUND","INTEGER",""},
+            {"PRICE","TEXT",""},
+            {"NOTES","TEXT",""}
+            {"LONGITUD","TEXT",""},
+            {"LATITUD","TEXT",""},
+            {"ITEMTYPE","TEXT",""},
+            {"ITEMID","INTEGER",""},
+    };
+
     public static final String T_BOOKS = "BOOKS";
     public static final String[][] T_BOOKS_FIELDS = {
             {"ID","INTEGER","PRIMARY KEY AUTOINCREMENT"},
-            {"DATE","TEXT",""},
+            {"ISBN","TEXT",""},
             {"TITLE","TEXT",""},
             {"AUTHOR","TEXT",""},
-            {"ISBN","TEXT",""},
             {"PUBLISHER","TEXT",""},
-            {"YEAR","TEXT",""},
-            {"PRICE","TEXT",""},
-            {"LONGITUD","TEXT",""},
-            {"LATITUD","TEXT",""},
             {"PLACE","TEXT",""},
+            {"YEAR","TEXT",""},
             {"PAGES","INTEGER",""},
-            {"COVERLINK","TEXT",""},
-            {"FOUND","INTEGER",""},
-            {"NOTES","TEXT",""}
+            {"COVERID","INTEGER",""},
     };
 
     //Tabla carátulas
@@ -53,7 +59,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //Tabla relacional
     public static final String T_BOOKS_COVERS = "BOOKS_COVERS";
     public static final String[][] T_BOOKS_COVERS_FIELDS = {
-//            {"ID","INTEGER","PRIMARY KEY AUTOINCREMENT"},
             {"bookID","INTEGER","NOT NULL"},
             {"coverID","INTEGER","NOT NULL"}
     };
@@ -72,6 +77,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //Crea las tablas vacias
         StringBuilder strSQL = new StringBuilder();
 
+        strSQL.append(sqlCreateTable(T_SCANS, T_SCANS_FIELDS));
+        strSQL.append(" ");
         strSQL.append(sqlCreateTable(T_BOOKS, T_BOOKS_FIELDS));
         strSQL.append(" ");
         strSQL.append(sqlCreateTable(T_COVERS, T_COVERS_FIELDS));
@@ -86,6 +93,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //Elimina las tablas actuales. Adios a los datos
         StringBuilder strSQL = new StringBuilder();
 
+        strSQL.append(sqlDropTable(T_SCANS));
+        strSQL.append(" ");
         strSQL.append(sqlDropTable(T_BOOKS));
         strSQL.append(" ");
         strSQL.append(sqlDropTable(T_COVERS));
@@ -125,7 +134,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return coverId;
     }
 
-    public ScanDetails createBook(ScanDetails scan){
+    public Scan createScan(Scan scan){
         //Necesito una referencia de acceso a la bbdd
         SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura. Si la bbdd no existe, la crea
 
@@ -160,18 +169,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return id == -1 ? null : scan;
     }
 
-    public ScanDetails readBook(Long id){
+    public Scan readScan(Long id){
         //Modifica el libro con un id concreto
         SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura. Si la bbdd no existe, la crea
         //Mediante rawQuery
         Cursor cursor = db.rawQuery("SELECT * FROM " + T_BOOKS + " WHERE " + T_BOOKS_FIELDS[0][0] + "=" + id, null);
 //        Cursor cursor = db.rawQuery("SELECT * FROM " + T_BOOKS + " WHERE " + T_BOOKS_PARAMS[0][0]COL_0_TAG + "=" + id, null);
-        ScanDetails scan = cursorToScanDetails(cursor);
+        Scan scan = cursorToScanDetails(cursor);
         db.close();
         return scan;
     }
 
-    public ScanDetails updateBook(ScanDetails scan){
+    public Scan updateScan(Scan scan){
         //Modifica el libro con un id concreto
         SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura. Si la bbdd no existe, la crea
         db.update(T_BOOKS, book2contentvalues(scan), T_BOOKS_FIELDS[0][0] + "=" + scan.getId(), null);
@@ -180,7 +189,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return scan;
     }
 
-    public Boolean deleteBook(Long id){
+    public Boolean deleteScan(Long id){
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(T_BOOKS, T_BOOKS_FIELDS[0][0] + "=" + id, null);
 //        //Mediante rawQuery
@@ -189,7 +198,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return Boolean.TRUE;
     }
 
-    public List<ScanDetails> getAll(){
+    public List<Scan> getAll(){
         SQLiteDatabase db = this.getWritableDatabase();
 
         //Mediante rawQuery
@@ -209,7 +218,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 null
         );
         */
-        return cursorToBookList(cursor);
+        return cursorToScanDetailsList(cursor);
     }
 
 //    public Long insertImage( String imageLink) throws SQLiteException {
@@ -242,10 +251,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     //Conveirte los tipos de java a sqlite y transfiere los campos de book a un contenedor de valores
-    private ContentValues book2contentvalues(ScanDetails scan){
+    private ContentValues book2contentvalues(Scan scan){
         //Creo un contenedor de valores y transformo los campos de book a los tipos de sqlite
         ContentValues contentValues = new ContentValues();
-        contentValues.put(T_BOOKS_FIELDS[1][0], Utilidades.getStringFromDate(scan.getDateCreation()));
+        contentValues.put(T_BOOKS_FIELDS[1][0], Utilidades.getStringFromDate(scan.getDateCreated()));
         contentValues.put(T_BOOKS_FIELDS[2][0], scan.getBook().getTitle());
         contentValues.put(T_BOOKS_FIELDS[3][0], scan.getBook().getAuthor());
         contentValues.put(T_BOOKS_FIELDS[4][0], scan.getBook().getIsbn());
@@ -259,15 +268,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(T_BOOKS_FIELDS[12][0], scan.getBook().getCover().getLink());
         contentValues.put(T_BOOKS_FIELDS[13][0], Utilidades.getIntegerFromBoolean(scan.getFound()));
         contentValues.put(T_BOOKS_FIELDS[14][0], scan.getNotes());
+        contentValues.put(T_BOOKS_FIELDS[15][0], Utilidades.getStringFromDate(scan.getDateModified()));
 //        insertImage(book.getCoverLink()); //guardar la id que devuelve
         return contentValues;
     }
 
     //Convierte un cursor de la tabla lecturas a una List de Books
-    private ScanDetails cursor2ScanDetails(Cursor cursor){
-        ScanDetails scan = new ScanDetails(); //Añado un libro nuevo en cada iteración
+    private Scan cursor2ScanDetails(Cursor cursor){
+        Scan scan = new Scan(); //Añado un libro nuevo en cada iteración
         scan.setId(cursor.getInt(0));
-        scan.setDateCreation(Utilidades.getDateFromString(cursor.getString(1)));
+        scan.setDateCreated(Utilidades.getDateFromString(cursor.getString(1)));
         scan.getBook().setTitle(cursor.getString(2));
         scan.getBook().setAuthor(cursor.getString(3));
         scan.getBook().setIsbn(cursor.getString(4));
@@ -281,11 +291,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         scan.getBook().getCover().setLink(cursor.getString(12));
         scan.setFound(Utilidades.getBooleanFromInteger(cursor.getInt(13)));
         scan.setNotes(cursor.getString(14));
+        scan.setDateModified(Utilidades.getDateFromString(cursor.getString(15)));
         return scan;
     }
 
-    private ScanDetails cursorToScanDetails(Cursor cursor){
-        ScanDetails scan = new ScanDetails();
+    private Scan cursorToScanDetails(Cursor cursor){
+        Scan scan = new Scan();
         //Verifico que el cursor no esté vacio
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
@@ -296,8 +307,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Convierte un cursor de la tabla lecturas a una List de Books
-    private List<Book> cursorToBookList(Cursor cursor){
-        List<Book> books = new ArrayList<>();
+    private List<Scan> cursorToScanDetailsList(Cursor cursor){
+        List<Scan> scans = new ArrayList<>();
 //        Book book;
 
         //Verifico que el cursor no esté vacio
@@ -319,11 +330,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //                book.setNumPages(cursor.getInt(11));
 //                book.setCoverLink(cursor.getString(12));
 //                book.setFound(Utilidades.getBooleanFromInteger(cursor.getInt(13)));
-                books.add(cursor2ScanDetails(cursor).getBook());
+                scans.add(cursor2ScanDetails(cursor));
             }
         }
         cursor.close();
-        return books;
+        return scans;
     }
 
 
