@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.abcsoft.catalogador.R;
 import com.abcsoft.catalogador.model.BookAPI.BookOpenLibrary;
-import com.abcsoft.catalogador.model.Local.Scan;
+import com.abcsoft.catalogador.model.Local.Book;
 import com.abcsoft.catalogador.retrofit.BooksAPI;
 import com.abcsoft.catalogador.retrofit.RetrofitHelper;
 import com.google.gson.Gson;
@@ -24,7 +24,7 @@ import retrofit2.Response;
 
 public class ScannerActivity extends AppCompatActivity {
 
-    private Scan scan;
+    private Book book;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,10 +48,10 @@ public class ScannerActivity extends AppCompatActivity {
         scan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            ScannerActivity.this.scan = new Scan(code.getText().toString(),"BOOK");
+            ScannerActivity.this.book = new Book(code.getText().toString());
 
             //Pido los datos al servicio REST de OpenLibrary
-            getRawOpenLibraryData(ScannerActivity.this.scan.getBarcode());
+            getRawOpenLibraryData(ScannerActivity.this.book.getIsbn());
             }
         });
 
@@ -91,7 +91,7 @@ public class ScannerActivity extends AppCompatActivity {
                     bookinfo.setIsbncode(bookIsbn); //isbn no esta entre los datos que vienen por json
 
                     //Transformo los datos al formato local
-                    scan.importFromOpenLibrary(bookinfo);
+                    book.importFromOpenLibrary(bookinfo);
                 }
                 //Cambio de activity
                 mostrarInformacion();
@@ -107,10 +107,10 @@ public class ScannerActivity extends AppCompatActivity {
     }
 
     private void mostrarInformacion(){
-        //llamo a ScanDetailsActivity pasandole los datos del libro en un intent
-        Intent intent = new Intent(ScannerActivity.this, ScanDetailsActivity.class);
+        //llamo a BookDetailsActivity pasandole los datos del libro en un intent
+        Intent intent = new Intent(ScannerActivity.this, BookDetailsActivity.class);
         Bundle b = new Bundle();
-        scan.exportToBundle(b);
+        book.exportToBundle(b);
         intent.putExtras(b);
         intent.putExtra("ORIGIN","scan");
         startActivity(intent);

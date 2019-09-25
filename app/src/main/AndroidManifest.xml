@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.abcsoft.catalogador">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
-
 
     <application
         android:allowBackup="true"
@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.ScanDetailsActivity" />
+        <activity android:name=".activities.BookDetailsActivity" />
         <activity android:name=".activities.ListViewActivity" />
         <activity android:name=".activities.ScannerActivity" />
         <activity android:name=".activities.MainActivity">

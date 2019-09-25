@@ -10,14 +10,14 @@ import android.widget.TextView;
 
 import com.abcsoft.catalogador.R;
 import com.abcsoft.catalogador.model.Local.Scan;
-import com.abcsoft.catalogador.services.ScansServicesSQLite;
+import com.abcsoft.catalogador.services.MediaServicesSQLite;
 import com.abcsoft.catalogador.services.ImageDownloadTask;
 
 import java.util.Date;
 
-public class ScanDetailsActivity extends AppCompatActivity {
+public class BookDetailsActivity extends AppCompatActivity {
 
-    private ScansServicesSQLite scansServices;
+    private MediaServicesSQLite scansServices;
     private Scan scan = new Scan();
 
     private TextView found;
@@ -56,7 +56,7 @@ public class ScanDetailsActivity extends AppCompatActivity {
         update = (Button) findViewById(R.id.idBtnUpdate);
         delete = (Button) findViewById(R.id.idBtnDelete);
 
-        scansServices = new ScansServicesSQLite(getApplicationContext());
+        scansServices = new MediaServicesSQLite(getApplicationContext());
 
         //Recogemos los datos enviados por el intent
         scan.importFromBundle(getIntent().getExtras()); //Los campos no editables toman su valor aquí
@@ -154,12 +154,12 @@ public class ScanDetailsActivity extends AppCompatActivity {
     }
 
     public void gotoPrincipal(){
-        Intent intent = new Intent(ScanDetailsActivity.this, MainActivity.class);
+        Intent intent = new Intent(BookDetailsActivity.this, MainActivity.class);
         startActivity(intent);
     }
 
     public void gotoList(){
-        Intent intent = new Intent(ScanDetailsActivity.this, ListViewActivity.class);
+        Intent intent = new Intent(BookDetailsActivity.this, ListViewActivity.class);
         startActivity(intent);
     }
 

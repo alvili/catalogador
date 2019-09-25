@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.abcsoft.catalogador.model.Local.Book;
 import com.abcsoft.catalogador.model.Local.Cover;
 import com.abcsoft.catalogador.model.Local.Scan;
 import com.abcsoft.catalogador.services.Utilidades;
@@ -123,40 +124,61 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura.
 
         //Inserto la caratula a la bbdd
-        byte[] image = Utilidades.getBytes(cover.getImage());
         ContentValues cv = new  ContentValues();
+        byte[] image = Utilidades.getBytes(cover.getImage());
         cv.put(T_COVERS_FIELDS[1][0], cover.getLink());
         cv.put(T_COVERS_FIELDS[2][0], image);
 
-        long coverId = db.insert(T_COVERS,null, cv);
+        long id = db.insert(T_COVERS,null, cv);
         db.close();
-        cover.setId(coverId);
-        return coverId;
+        cover.setCoverId(id);
+        return id;
     }
 
-    public Scan createScan(Scan scan){
+    private Long insertBook(Book book){
+        SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura. Si la bbdd no existe, la crea
+
+        //Inserto libro a la bbdd si ya existe devuelve id
+        ContentValues cv = new  ContentValues();
+        cv.put(T_BOOKS_FIELDS[1][0], book.getIsbn());
+        cv.put(T_BOOKS_FIELDS[2][0], book.getTitle());
+        cv.put(T_BOOKS_FIELDS[3][0], book.getAuthor());
+        cv.put(T_BOOKS_FIELDS[4][0], book.getPublisher());
+        cv.put(T_BOOKS_FIELDS[5][0], book.getPublishPlace());
+        cv.put(T_BOOKS_FIELDS[6][0], book.getPublishDate());
+        cv.put(T_BOOKS_FIELDS[7][0], book.getNumPages());
+        cv.put(T_BOOKS_FIELDS[8][0], insertCover(book.getCover())); //Devuelve id de la carátula
+
+        long id = db.insert(T_BOOKS,null, cv);
+        db.close();
+        book.setMediaId(id);
+        return id;
+    }
+
+    public Book createBook(Book book){
         //Necesito una referencia de acceso a la bbdd
         SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura. Si la bbdd no existe, la crea
 
         //CON db.beginTransaction() no guarda datos a la bbdd
 //        db.beginTransaction();//Inicia transaccion.Sirve para garantizar la consistencia de la bbdd en caso de problemas
 
-        //Obtener id de la imagen
-        long coverId = getCoverID(scan.getBook().getCover().getLink());
+        ContentValues cv = new  ContentValues();
+        cv.put(T_SCANS_FIELDS[1][0], book.getBarcode());
+        cv.put(T_SCANS_FIELDS[2][0], Utilidades.getStringFromDate(book.getDateCreated()));
+        cv.put(T_SCANS_FIELDS[3][0], Utilidades.getStringFromDate(book.getDateModified()));
+        cv.put(T_SCANS_FIELDS[4][0], Utilidades.getIntegerFromBoolean(book.getFound()));
+        cv.put(T_SCANS_FIELDS[5][0], book.getPrice());
+        cv.put(T_SCANS_FIELDS[6][0], book.getNotes());
+        cv.put(T_SCANS_FIELDS[7][0], book.getLongitud());
+        cv.put(T_SCANS_FIELDS[8][0], book.getLatitud());
+        cv.put(T_SCANS_FIELDS[9][0], book.getType());
+        cv.put(T_SCANS_FIELDS[10][0], insertBook(book)); //Devuelve id del libro
 
-        long id = db.insert(T_BOOKS,null, book2contentvalues(scan));
+        long id = db.insert(T_BOOKS,null, cv);
         //db.insert devulve un long correspondiente al número de registros. Equivale al codigo
         //nullColumnHack se utiliza cuando queremos insertar un registro con valores null
 
-        byte[] image = Utilidades.getBytes(scan.getBook().getCover().getImage());
-
-        ContentValues cv = new  ContentValues();
-        cv.put(T_COVERS_FIELDS[0][0], scan.getBook().getCover().getLink());
-        cv.put(T_COVERS_FIELDS[1][0], image);
-
-        long id2 = db.insert(T_COVERS,null, cv);
-
-        //TODO LIMPIAR ESTO!!
+        book.setScanId(id);
 
 //        db.endTransaction(); //Cierra el beginTransaction
         db.close();
@@ -166,11 +188,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //        if (id > 0) {
 //            lectura.setCodigo((int) id);
 //        }
-        return id == -1 ? null : scan;
+        return id == -1 ? null : book;
     }
 
+
     public Scan readScan(Long id){
-        //Modifica el libro con un id concreto
+        //Recupera un libro a partir del id
         SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura. Si la bbdd no existe, la crea
         //Mediante rawQuery
         Cursor cursor = db.rawQuery("SELECT * FROM " + T_BOOKS + " WHERE " + T_BOOKS_FIELDS[0][0] + "=" + id, null);

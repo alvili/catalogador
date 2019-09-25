@@ -8,28 +8,29 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.abcsoft.catalogador.R;
-import com.abcsoft.catalogador.model.Local.Scan;
+import com.abcsoft.catalogador.model.Local.Media;
+import com.abcsoft.catalogador.services.Utilidades;
 
 import java.util.List;
 
-public class BooksAdapter extends BaseAdapter {
+public class MediasAdapter extends BaseAdapter {
 
-    private List<Scan> scans;
+    private List<Media> medias;
     private LayoutInflater inflater;
 
-    public BooksAdapter(Context context, List <Scan> scans){
-        this.scans = scans;
+    public MediasAdapter(Context context, List <Media> medias){
+        this.medias = medias;
         inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
     public int getCount() {
-        return scans.size();
+        return medias.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return scans.get(position);
+        return medias.get(position);
     }
 
     @Override
@@ -46,8 +47,8 @@ public class BooksAdapter extends BaseAdapter {
         TextView scanDate = view.findViewById(R.id.idScanDate);
 
         //Construyo el contenido
-        title.setText(scans.get(position).getBook().getTitle());
-//        scanDate.setText(Utilidades.getStringFromDate(books.get(position).getDateCreation()));
+        title.setText(medias.get(position).getTitle());
+        scanDate.setText(Utilidades.getStringFromDate(medias.get(position).getDateModified()));
         return view;
     }
 }

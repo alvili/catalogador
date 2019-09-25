@@ -8,44 +8,45 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.abcsoft.catalogador.R;
-import com.abcsoft.catalogador.adapters.BooksAdapter;
-import com.abcsoft.catalogador.model.Local.Scan;
-import com.abcsoft.catalogador.services.ScansServices;
-import com.abcsoft.catalogador.services.ScansServicesSQLite;
+import com.abcsoft.catalogador.adapters.MediasAdapter;
+import com.abcsoft.catalogador.model.Local.Media;
+import com.abcsoft.catalogador.services.MediaServices;
+import com.abcsoft.catalogador.services.MediaServicesSQLite;
 
 import java.util.List;
 
 public class ListViewActivity  extends AppCompatActivity {
 
-    List<Scan> scans;
-    ListView listScans;
+    List<Media> medias;
+    ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listview);
 
-        listScans = (ListView) findViewById(R.id.idListView);
+        listView = (ListView) findViewById(R.id.idListView);
 
         //Recupero la lista de todos los libros...
-        final ScansServices scansServices = new ScansServicesSQLite(this);
-        scans = scansServices.getAll();
+        final MediaServices mediaServices = new MediaServicesSQLite(this);
+        medias = mediaServices.getAll();
 
         //...y los paso a un adaptador para que rellene la lista de libros...
-        listScans.setAdapter(new BooksAdapter(this, scans));
+        listView.setAdapter(new MediasAdapter(this, medias));
 
         //...y muestre los datos de uno concreto cuando se seleccione
-        listScans.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //Recupero los datos del libro de la bbdd local sqlite
 
                 //Lanzo un intent y transfiero detalles del libro en un bundle
-                Intent intent = new Intent(ListViewActivity.this, ScanDetailsActivity.class);
+                Intent intent = new Intent(ListViewActivity.this, BookDetailsActivity.class);
 //                intent.putExtras(books.get(position).exportToBundle());
                 Bundle b = new Bundle();
                 //Exporto los datos del Item seleccionado en un bundle
-                scansServices.read(scans.get(position).getId()).exportToBundle(b);
+                //TODO ARREGLAR ESTO
+                mediaServices.read(medias.get(position).getId()).exportToBundle(b);
                 intent.putExtras(b);
                 intent.putExtra("ORIGIN","list");
                 startActivity(intent);
