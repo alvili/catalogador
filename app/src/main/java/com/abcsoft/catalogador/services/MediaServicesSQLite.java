@@ -18,27 +18,22 @@ public class MediaServicesSQLite implements MediaServices {
 
     @Override
     public Media create(Media media) {
-        switch (media.getType()){
-            case BOOK:
-                return myDB.createBook(media);
-                break;
-            case CD:
-        }
+        return myDB.createMedia(media);
     }
 
     @Override
     public Media read(Long id) {
-        return myDB.readScan(id);
+        return myDB.readMedia(id);
     }
 
     @Override
     public Media update(Media media) {
-        return myDB.updateScan(media);
+        return myDB.updateMedia(media);
     }
 
     @Override
     public Boolean delete(Long id) {
-        return myDB.deleteScan(id);
+        return myDB.deleteMedia(id);
     }
 
     @Override

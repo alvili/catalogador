@@ -1,5 +1,6 @@
 package com.abcsoft.catalogador.services;
 
+import com.abcsoft.catalogador.model.Local.Book;
 import com.abcsoft.catalogador.model.Local.Media;
 import com.abcsoft.catalogador.model.Local.Scan;
 

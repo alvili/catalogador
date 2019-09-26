@@ -27,6 +27,7 @@ public class ListViewActivity  extends AppCompatActivity {
 
         listView = (ListView) findViewById(R.id.idListView);
 
+        //TODO Filtrar por tipos de media
         //Recupero la lista de todos los libros...
         final MediaServices mediaServices = new MediaServicesSQLite(this);
         medias = mediaServices.getAll();
@@ -45,8 +46,7 @@ public class ListViewActivity  extends AppCompatActivity {
 //                intent.putExtras(books.get(position).exportToBundle());
                 Bundle b = new Bundle();
                 //Exporto los datos del Item seleccionado en un bundle
-                //TODO ARREGLAR ESTO
-                mediaServices.read(medias.get(position).getId()).exportToBundle(b);
+                mediaServices.read(medias.get(position).getScanId()).exportToBundle(b);
                 intent.putExtras(b);
                 intent.putExtra("ORIGIN","list");
                 startActivity(intent);

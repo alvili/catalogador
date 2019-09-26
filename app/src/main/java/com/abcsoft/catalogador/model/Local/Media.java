@@ -4,10 +4,6 @@ import android.os.Bundle;
 
 public class Media extends Scan {
 
-    private enum Type {
-        BOOK, CD, VIDEOGAME
-    }
-
     private long mediaId;
     private String title;
     private String author;
@@ -16,8 +12,6 @@ public class Media extends Scan {
     private String publishPlace;
     private Cover cover;
     private Type type;
-
-
 
     public void importFromBundle(Bundle b) {
         //Si el bundle no es null recupero los datos
@@ -28,6 +22,7 @@ public class Media extends Scan {
             this.setPublisher(b.getString("publisher"));
             this.setPublishDate(b.getString("publishDate"));
             this.setPublishPlace(b.getString("publishPlace"));
+            this.setType(Type.valueOf(b.getString("type")));
         }
         this.cover.importFromBundle(b);
     }
@@ -40,6 +35,7 @@ public class Media extends Scan {
         b.putString("publisher", this.getPublisher());
         b.putString("publishDate", this.getPublishDate());
         b.putString("publishPlace", this.getPublishPlace());
+        b.putString("type", this.getType().toString());
         cover.exportToBundle(b);
     }
 

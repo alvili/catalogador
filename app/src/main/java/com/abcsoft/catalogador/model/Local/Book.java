@@ -47,7 +47,7 @@ public class Book extends Media implements Serializable {
     }
 
     public Book() {
-        super(BOOK);
+        super(Type.BOOK);
         this.isbn = "";
         this.numPages = 0;
     }

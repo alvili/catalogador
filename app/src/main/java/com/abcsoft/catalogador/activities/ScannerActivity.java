@@ -1,6 +1,7 @@
 package com.abcsoft.catalogador.activities;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -13,6 +14,7 @@ import com.abcsoft.catalogador.model.BookAPI.BookOpenLibrary;
 import com.abcsoft.catalogador.model.Local.Book;
 import com.abcsoft.catalogador.retrofit.BooksAPI;
 import com.abcsoft.catalogador.retrofit.RetrofitHelper;
+import com.abcsoft.catalogador.services.Utilidades;
 import com.google.gson.Gson;
 
 import java.util.HashMap;
@@ -34,9 +36,18 @@ public class ScannerActivity extends AppCompatActivity {
         Button scan = findViewById(R.id.id_BtnScanCode);
         final TextView code = (TextView) findViewById(R.id.idTextCode);
 
+
+        //Recupero la imagen
+        Bitmap barcodePicture = Utilidades.getBitmap(getIntent().getExtras().getByteArray("barcodePicture"));
+
 //        code.setText("9788408085614");
         code.setText("9781101965481");
 //        code.setText("8439596065");
+
+        //Creo un nuevo libro
+        //TODO Adaptar a otros tipos de media
+        book = new Book(code.getText().toString());
+        book.setBarcodePicture(barcodePicture);
 
         //TODO:
         //1) Obtener ISBN
@@ -48,8 +59,8 @@ public class ScannerActivity extends AppCompatActivity {
         scan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            ScannerActivity.this.book = new Book(code.getText().toString());
-
+//            ScannerActivity.this.book = new Book(code.getText().toString());
+            ScannerActivity.this.book.setBarcode(code.getText().toString());
             //Pido los datos al servicio REST de OpenLibrary
             getRawOpenLibraryData(ScannerActivity.this.book.getIsbn());
             }

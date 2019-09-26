@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.abcsoft.catalogador.R;
-import com.abcsoft.catalogador.model.Local.Scan;
+import com.abcsoft.catalogador.model.Local.Book;
 import com.abcsoft.catalogador.services.MediaServicesSQLite;
 import com.abcsoft.catalogador.services.ImageDownloadTask;
 
@@ -18,7 +18,7 @@ import java.util.Date;
 public class BookDetailsActivity extends AppCompatActivity {
 
     private MediaServicesSQLite scansServices;
-    private Scan scan = new Scan();
+    private Book book = new Book();
 
     private TextView found;
     private TextView isbn;
@@ -59,7 +59,7 @@ public class BookDetailsActivity extends AppCompatActivity {
         scansServices = new MediaServicesSQLite(getApplicationContext());
 
         //Recogemos los datos enviados por el intent
-        scan.importFromBundle(getIntent().getExtras()); //Los campos no editables toman su valor aquí
+        book.importFromBundle(getIntent().getExtras()); //Los campos no editables toman su valor aquí
 
         //Transfiero los datos a los campos
         scanToForm(getIntent().getExtras().getString("ORIGIN"));
@@ -69,7 +69,7 @@ public class BookDetailsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //Guardo los datos a la bbdd local como un nuevo elemento
                 formToScan();
-                scansServices.create(scan);
+                scansServices.create(book);
 
                 //Vuelvo a la vista principal
                 gotoPrincipal();
@@ -80,7 +80,7 @@ public class BookDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //borra el elemento de la bbdd local
-                scansServices.update(scan);
+                scansServices.update(book);
 
                 //Vuelvo a la lista
                 gotoList();
@@ -91,7 +91,7 @@ public class BookDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //borra el elemento de la bbdd local
-                scansServices.delete(scan.getBook().getId()); //TODO boorar scan o borrar libro?
+                scansServices.delete(book.getMediaId()); //TODO boorar scan o borrar libro?
 
                 //Vuelvo a la lista
                 gotoList();
@@ -103,7 +103,7 @@ public class BookDetailsActivity extends AppCompatActivity {
         //Preparo la vista en función de si se viene de un nuevo escaneo o de la lista de escaneos
 
         found.setText(R.string.notfound);
-        found.setVisibility((scan.getFound()) ? View.INVISIBLE : View.VISIBLE);
+        found.setVisibility((book.getFound()) ? View.INVISIBLE : View.VISIBLE);
 
         switch(ORIGEN) {
             case "scan":
@@ -116,41 +116,40 @@ public class BookDetailsActivity extends AppCompatActivity {
 //        found.setText(R.string.alreadyscanned);
 
                 //Descargo la carátula
-                ImageDownloadTask miAsyncTask = new ImageDownloadTask(scan,cover);
-                miAsyncTask.execute(scan.getBook().getCover().getLink());
+                ImageDownloadTask miAsyncTask = new ImageDownloadTask(book,cover);
+                miAsyncTask.execute(book.getCover().getLink());
                 break;
             case "list":
                 create.setVisibility(View.VISIBLE);
                 update.setVisibility(View.VISIBLE);
                 delete.setVisibility(View.VISIBLE);
-                cover.setImageBitmap(scan.getBook().getCover().getImage());
+                cover.setImageBitmap(book.getCover().getImage());
                 break;
             default:
                 break;
         }
-        title.setText(scan.getBook().getTitle());
-        isbn.setText(scan.getBook().getIsbn());
-        publishDate.setText(scan.getBook().getPublishDate());
-        publishPlace.setText(scan.getBook().getPublishPlace());
-        publisher.setText(scan.getBook().getPublisher());
-        author.setText(scan.getBook().getAuthor());
-        numPags.setText(String.valueOf(scan.getBook().getNumPages()));
-        price.setText(String.valueOf(scan.getPrice()));
-        notes.setText(scan.getNotes());
+        isbn.setText(book.getIsbn());
+        title.setText(book.getTitle());
+        author.setText(book.getAuthor());
+        publisher.setText(book.getPublisher());
+        publishDate.setText(book.getPublishDate());
+        publishPlace.setText(book.getPublishPlace());
+        numPags.setText(String.valueOf(book.getNumPages()));
+        notes.setText(book.getNotes());
+        price.setText(String.valueOf(book.getPrice()));
     }
 
     public void formToScan() {
-        scan.getBook().setIsbn(isbn.getText().toString());
-        scan.getBook().setTitle(title.getText().toString());
-        scan.getBook().setAuthor(author.getText().toString());
-        scan.getBook().setPublisher(publisher.getText().toString());
-        scan.getBook().setPublishDate(publishDate.getText().toString());
-        scan.getBook().setPublishPlace(publishPlace.getText().toString());
-        scan.getBook().setNumPages(Integer.parseInt(numPags.getText().toString()));
-
-        scan.setNotes(notes.getText().toString());
-        scan.setPrice(Double.parseDouble(price.getText().toString()));
-        scan.setDateModified(new Date()); //Actualizo fecha de modificación
+        book.setIsbn(isbn.getText().toString());
+        book.setTitle(title.getText().toString());
+        book.setAuthor(author.getText().toString());
+        book.setPublisher(publisher.getText().toString());
+        book.setPublishDate(publishDate.getText().toString());
+        book.setPublishPlace(publishPlace.getText().toString());
+        book.setNumPages(Integer.parseInt(numPags.getText().toString()));
+        book.setNotes(notes.getText().toString());
+        book.setPrice(Double.parseDouble(price.getText().toString()));
+        book.setDateModified(new Date()); //Actualizo fecha de modificación
     }
 
     public void gotoPrincipal(){
