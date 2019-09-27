@@ -1,9 +1,13 @@
 package com.abcsoft.catalogador.activities;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -18,29 +22,37 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import static android.app.Activity.RESULT_OK;
+
+//public class CameraActivity  {
 public class CameraActivity  extends AppCompatActivity {
 
-    private Button btnGuardarFoto;
-    private ImageView imageView;
+//    private Button btnGuardarFoto;
+//    private ImageView imageView;
 
-    private Bitmap imagenActual;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.camera_activity);
+//        setContentView(R.layout.camera_activity);
+        setContentView(R.layout.activity_scanner);
 
-        btnGuardarFoto = findViewById(R.id.idTakePic);
-        imageView = findViewById(R.id.idCameraView);
+        //
+//        btnGuardarFoto = findViewById(R.id.idTakePic);
+//        imageView = findViewById(R.id.idCameraView);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED){
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA},100);
+        }
 
         abrirCamara();
 
-        btnGuardarFoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                guardarFoto();
-            }
-        });
+//        btnGuardarFoto.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                guardarFoto();
+//            }
+//        });
 
     }
 
@@ -54,16 +66,11 @@ public class CameraActivity  extends AppCompatActivity {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data"); //Hay que saber que la clave del bundle para la foto es "data"
 
-            imageView.setImageBitmap(imageBitmap);
-
-            //Possiblemente guarde el bitmap en el sistema de archivos
-            //interesara guardar el bitmap en la variable de instancia de esta activity
-            imagenActual = imageBitmap;
-
+//            imageView.setImageBitmap(imageBitmap);
 
             //Me llevo la imagen a la siguiente activity
             Intent intent = new Intent(this, ScannerActivity.class);
-            intent.putExtra("barcodePicture", Utilidades.getBytes(imagenActual));
+            intent.putExtra("barcodePicture", Utilidades.getBytes(imageBitmap));
             startActivity(intent);
 
         }
@@ -108,7 +115,7 @@ public class CameraActivity  extends AppCompatActivity {
             OutputStream out = new FileOutputStream(file);
 
             //Enviamos la imagen actual a través del stream
-            imagenActual.compress(Bitmap.CompressFormat.JPEG, 100, out);
+//            imagenActual.compress(Bitmap.CompressFormat.JPEG, 100, out);
             out.flush(); //ejecutamos
             out.close();
 

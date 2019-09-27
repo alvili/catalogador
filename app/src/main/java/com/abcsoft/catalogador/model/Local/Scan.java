@@ -57,7 +57,7 @@ public class Scan {
         this.longitud = 0.0;
         this.latitud = 0.0;
         this.barcode = "";
-        this.barcodePicture = null;
+        this.barcodePicture = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         this.price = 0.0;
         this.notes = "";
     }

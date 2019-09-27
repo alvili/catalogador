@@ -31,8 +31,8 @@ public class Book extends Media implements Serializable {
     }
 
     public void importFromBundle(Bundle b) {
-        //Si el bundle no es null recupero los datos
         super.importFromBundle(b);
+        //Si el bundle no es null recupero los datos
         if(b != null) {
             this.setIsbn(b.getString("isbn"));
             this.setNumPages(b.getInt("numPags"));

@@ -1,8 +1,15 @@
 package com.abcsoft.catalogador.activities;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -27,15 +34,18 @@ import retrofit2.Response;
 public class ScannerActivity extends AppCompatActivity {
 
     private Book book;
+    private LocationManager locationManager;
+    private String providerName;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scanner);
 
+        //Referencio la vista
         Button scan = findViewById(R.id.id_BtnScanCode);
         final TextView code = (TextView) findViewById(R.id.idTextCode);
-
 
         //Recupero la imagen
         Bitmap barcodePicture = Utilidades.getBitmap(getIntent().getExtras().getByteArray("barcodePicture"));
@@ -48,6 +58,38 @@ public class ScannerActivity extends AppCompatActivity {
         //TODO Adaptar a otros tipos de media
         book = new Book(code.getText().toString());
         book.setBarcodePicture(barcodePicture);
+
+        //Determino la posicion
+        Criteria criteria = new Criteria();
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        providerName = locationManager.getBestProvider(criteria, false);
+
+        if (providerName != null && !providerName.equals("")) {
+
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                Log.d("**","No hay permiso");
+                return;
+            }
+            Location location = locationManager.getLastKnownLocation(providerName);
+
+            if (location != null) {
+                Log.d("**","Provider: " + providerName);
+                Log.d("**","Longitud: " + location.getLongitude());
+                Log.d("**","Latitud: " + location.getLatitude());
+                book.setLongitud(location.getLongitude());
+                book.setLatitud(location.getLatitude());
+            } else {
+                Log.d("**","No hay provider");
+            }
+
+        }
 
         //TODO:
         //1) Obtener ISBN

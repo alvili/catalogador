@@ -24,55 +24,55 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String T_SCANS = "SCANS";
     public static final String[][] T_SCANS_FIELDS = {
-            {"ID","INTEGER","PRIMARY KEY AUTOINCREMENT"},
-            {"BARCODE","TEXT",""},
-            {"BARCODEPICTURE","BLOB",""},
-            {"CREATED","TEXT",""},
-            {"MODIFIED","TEXT",""}
-            {"FOUND","INTEGER",""},
-            {"PRICE","TEXT",""},
-            {"NOTES","TEXT",""}
-            {"LONGITUD","TEXT",""},
-            {"LATITUD","TEXT",""},
-            {"MEDIATYPE","TEXT",""},
-            {"MEDIAID","INTEGER",""},
+            {"ID", "INTEGER", "PRIMARY KEY AUTOINCREMENT"},
+            {"BARCODE", "TEXT", ""},
+            {"BARCODEPICTURE", "BLOB", ""},
+            {"CREATED", "TEXT", ""},
+            {"MODIFIED", "TEXT", ""},
+            {"FOUND", "INTEGER", ""},
+            {"PRICE", "TEXT", ""},
+            {"NOTES", "TEXT", ""},
+            {"LONGITUD", "TEXT", ""},
+            {"LATITUD", "TEXT", ""},
+            {"MEDIATYPE", "TEXT", ""},
+            {"MEDIAID", "INTEGER", ""}
     };
 
     public static final String T_BOOKS = "BOOKS";
     public static final String[][] T_BOOKS_FIELDS = {
-            {"ID","INTEGER","PRIMARY KEY AUTOINCREMENT"},
-            {"ISBN","TEXT",""},
-            {"TITLE","TEXT",""},
-            {"AUTHOR","TEXT",""},
-            {"PUBLISHER","TEXT",""},
-            {"PLACE","TEXT",""},
-            {"YEAR","TEXT",""},
-            {"PAGES","INTEGER",""},
-            {"COVERID","INTEGER",""},
+            {"ID", "INTEGER", "PRIMARY KEY AUTOINCREMENT"},
+            {"ISBN", "TEXT", ""},
+            {"TITLE", "TEXT", ""},
+            {"AUTHOR", "TEXT", ""},
+            {"PUBLISHER", "TEXT", ""},
+            {"PLACE", "TEXT", ""},
+            {"YEAR", "TEXT", ""},
+            {"PAGES", "INTEGER", ""},
+            {"COVERID", "INTEGER", ""}
     };
 
     //Tabla carátulas
     public static final String T_COVERS = "COVERS";
     public static final String[][] T_COVERS_FIELDS = {
-            {"ID","INTEGER","PRIMARY KEY AUTOINCREMENT"},
-            {"LINK","TEXT",""},
-            {"IMAGE","BLOB",""}
+            {"ID", "INTEGER", "PRIMARY KEY AUTOINCREMENT"},
+            {"LINK", "TEXT", ""},
+            {"IMAGE", "BLOB", ""}
     };
 
     //Tabla relacional
     public static final String T_BOOKS_COVERS = "BOOKS_COVERS";
     public static final String[][] T_BOOKS_COVERS_FIELDS = {
-            {"bookID","INTEGER","NOT NULL"},
-            {"coverID","INTEGER","NOT NULL"}
+            {"bookID", "INTEGER", "NOT NULL"},
+            {"coverID", "INTEGER", "NOT NULL"}
     };
     public static final String[][] T_BOOKS_COVERS_KEYS = {
-            {"bookID",T_BOOKS,T_BOOKS_FIELDS[0][0]},
-            {"coverID",T_COVERS,T_COVERS_FIELDS[0][0]}
+            {"bookID", T_BOOKS, T_BOOKS_FIELDS[0][0]},
+            {"coverID", T_COVERS, T_COVERS_FIELDS[0][0]}
     };
 
 
     public DatabaseHelper(Context context) {
-        super(context, DATABASE_NAME, null, 1);
+        super(context, DATABASE_NAME, null, 2);
     }
 
     @Override
@@ -81,14 +81,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         StringBuilder strSQL = new StringBuilder();
 
         strSQL.append(sqlCreateTable(T_SCANS, T_SCANS_FIELDS));
-        strSQL.append(" ");
-        strSQL.append(sqlCreateTable(T_BOOKS, T_BOOKS_FIELDS));
-        strSQL.append(" ");
-        strSQL.append(sqlCreateTable(T_COVERS, T_COVERS_FIELDS));
-        strSQL.append(" ");
-        strSQL.append(sqlCreateTable(T_BOOKS_COVERS, T_BOOKS_COVERS_FIELDS, T_BOOKS_COVERS_KEYS));
-
         db.execSQL(strSQL.toString());
+        strSQL.append(sqlCreateTable(T_BOOKS, T_BOOKS_FIELDS));
+        db.execSQL(strSQL.toString());
+        strSQL.append(sqlCreateTable(T_COVERS, T_COVERS_FIELDS));
+        db.execSQL(strSQL.toString());
+//        strSQL.append(sqlCreateTable(T_BOOKS_COVERS, T_BOOKS_COVERS_FIELDS, T_BOOKS_COVERS_KEYS));
+//        db.execSQL(strSQL.toString());
     }
 
     @Override
@@ -97,21 +96,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         StringBuilder strSQL = new StringBuilder();
 
         strSQL.append(sqlDropTable(T_SCANS));
-        strSQL.append(" ");
-        strSQL.append(sqlDropTable(T_BOOKS));
-        strSQL.append(" ");
-        strSQL.append(sqlDropTable(T_COVERS));
-        strSQL.append(" ");
-        strSQL.append(sqlDropTable(T_BOOKS_COVERS));
-
         db.execSQL(strSQL.toString());
+        strSQL.append(sqlDropTable(T_BOOKS));
+        db.execSQL(strSQL.toString());
+        strSQL.append(sqlDropTable(T_COVERS));
+        db.execSQL(strSQL.toString());
+//        strSQL.append(sqlDropTable(T_BOOKS_COVERS));
+//        db.execSQL(strSQL.toString());
         onCreate(db); //Reconstruye las tablas desde cero
     }
 
-    private long getCoverID(String coverLink){
+    private long getCoverID(String coverLink) {
         long coverID = -1;
         SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura.
-        String sqlQuery = "SELECT " + T_COVERS_FIELDS[0][0] + " FROM " + T_COVERS + " WHERE " + T_COVERS_FIELDS[0][1] + " = \"" + coverLink +"\"";
+        String sqlQuery = "SELECT " + T_COVERS_FIELDS[0][0] + " FROM " + T_COVERS + " WHERE " + T_COVERS_FIELDS[0][1] + " = \"" + coverLink + "\"";
         Cursor c = db.rawQuery(sqlQuery, null);
         if (c != null && c.getCount() > 0) {
             c.moveToFirst();
@@ -123,20 +121,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Inserta la caratula a la bbdd
-    private long insertCover(Cover cover){
+    private long insertCover(Cover cover) {
         SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura.
-        ContentValues cv = new  ContentValues();
+        ContentValues cv = new ContentValues();
         cv.put(T_COVERS_FIELDS[1][0], cover.getLink());
         cv.put(T_COVERS_FIELDS[2][0], Utilidades.getBytes(cover.getImage()));
 
-        long id = db.insert(T_COVERS,null, cv);
-        db.close();
+        long id = db.insert(T_COVERS, null, cv);
+//        db.close();
         cover.setCoverId(id);
         return id;
     }
 
     //Recupera una cubierta a partir del id
-    private Cover readCover(Long id){
+    private Cover readCover(Long id) {
         Cover cover = new Cover();
         SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura. Si la bbdd no existe, la crea
         //Mediante rawQuery
@@ -147,16 +145,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             cover.setLink(cursor.getString(1));
             cover.setImage(Utilidades.getBitmap(cursor.getBlob(2)));
         }
-        db.close();
+//        db.close();
         return cover;
     }
 
 
-    private Long insertBook(Book book){
+    private Long insertBook(Book book) {
         SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura. Si la bbdd no existe, la crea
 
         //Inserto libro a la bbdd si ya existe devuelve id
-        ContentValues cv = new  ContentValues();
+        ContentValues cv = new ContentValues();
         cv.put(T_BOOKS_FIELDS[1][0], book.getIsbn());
         cv.put(T_BOOKS_FIELDS[2][0], book.getTitle());
         cv.put(T_BOOKS_FIELDS[3][0], book.getAuthor());
@@ -166,8 +164,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv.put(T_BOOKS_FIELDS[7][0], book.getNumPages());
         cv.put(T_BOOKS_FIELDS[8][0], insertCover(book.getCover())); //Devuelve id de la carátula
 
-        long id = db.insert(T_BOOKS,null, cv);
-        db.close();
+        long id = db.insert(T_BOOKS, null, cv);
+//        db.close();
         book.setMediaId(id);
         return id;
     }
@@ -184,14 +182,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public Book createBook(Book book){
+    public Book createBook(Book book) {
         //Necesito una referencia de acceso a la bbdd
         SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura. Si la bbdd no existe, la crea
 
         //CON db.beginTransaction() no guarda datos a la bbdd
 //        db.beginTransaction();//Inicia transaccion.Sirve para garantizar la consistencia de la bbdd en caso de problemas
 
-        ContentValues cv = new  ContentValues();
+        ContentValues cv = new ContentValues();
         cv.put(T_SCANS_FIELDS[1][0], book.getBarcode());
         cv.put(T_SCANS_FIELDS[2][0], Utilidades.getBytes(book.getBarcodePicture()));
         cv.put(T_SCANS_FIELDS[3][0], Utilidades.getStringFromDate(book.getDateCreated()));
@@ -204,7 +202,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv.put(T_SCANS_FIELDS[10][0], book.getType().toString());
         cv.put(T_SCANS_FIELDS[11][0], insertBook(book)); //Devuelve id del libro
 
-        long id = db.insert(T_SCANS,null, cv);
+        long id = db.insert(T_SCANS, null, cv);
         //db.insert devulve un long correspondiente al número de registros. Equivale al codigo
         //nullColumnHack se utiliza cuando queremos insertar un registro con valores null
 
@@ -222,8 +220,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-
-    public Media readMedia(Long id){
+    public Media readMedia(Long id) {
         //Recupera un libro a partir del id
         SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura. Si la bbdd no existe, la crea
         //Mediante rawQuery
@@ -234,21 +231,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             switch (MediaType) {
                 case BOOK:
-                    return readBook(id);
+                    return (Media) readBook(id);
                 case CD:
                     return null;
                 default:
                     return null;
             }
+        } else {
+            return null;
         }
-
-
-
     }
 
 
     //Devuelve un libro a partir del scanId
-    public Book readBook(Long id){
+    public Book readBook(Long id) {
         //Recupera un libro a partir del id del scan
         Book book = new Book();
         SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura. Si la bbdd no existe, la crea
@@ -257,52 +253,79 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
-            book.setScanId(cursor.getInt(0));
-            book.setBarcode(cursor.getString(1));
-            book.setBarcodePicture(Utilidades.getBitmap(cursor.getBlob(2)));
-            book.setDateCreated(Utilidades.getDateFromString(cursor.getString(3)));
-            book.setDateModified(Utilidades.getDateFromString(cursor.getString(4)));
-            book.setFound(Utilidades.getBooleanFromInteger(cursor.getInt(5)));
-            book.setPrice(cursor.getDouble(6));
-            book.setNotes(cursor.getString(7));
-            book.setLongitud(cursor.getDouble(8));
-            book.setLatitud(cursor.getDouble(9));
-            book.setType(Type.valueOf(cursor.getString(10)));
-            book.setMediaId(cursor.getLong(11));
+            cursorTScansToBook(cursor, book);
+//            book.setScanId(cursor.getInt(0));
+//            book.setBarcode(cursor.getString(1));
+//            book.setBarcodePicture(Utilidades.getBitmap(cursor.getBlob(2)));
+//            book.setDateCreated(Utilidades.getDateFromString(cursor.getString(3)));
+//            book.setDateModified(Utilidades.getDateFromString(cursor.getString(4)));
+//            book.setFound(Utilidades.getBooleanFromInteger(cursor.getInt(5)));
+//            book.setPrice(cursor.getDouble(6));
+//            book.setNotes(cursor.getString(7));
+//            book.setLongitud(cursor.getDouble(8));
+//            book.setLatitud(cursor.getDouble(9));
+//            book.setType(Type.valueOf(cursor.getString(10)));
+//            book.setMediaId(cursor.getLong(11));
         }
 
         cursor = db.rawQuery("SELECT * FROM " + T_BOOKS + " WHERE " + T_BOOKS_FIELDS[0][0] + "=" + book.getMediaId(), null);
 
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
-            book.setIsbn(cursor.getString(1));
-            book.setTitle(cursor.getString(2));
-            book.setAuthor(cursor.getString(3));
-            book.setPublisher(cursor.getString(4));
-            book.setPublishPlace(cursor.getString(5));
-            book.setPublishDate(cursor.getString(6));
-            book.setNumPages(cursor.getInt(7));
-            book.setCover(readCover(cursor.getLong(8)));
+            cursorTBooksToBook(cursor, book);
+//            book.setIsbn(cursor.getString(1));
+//            book.setTitle(cursor.getString(2));
+//            book.setAuthor(cursor.getString(3));
+//            book.setPublisher(cursor.getString(4));
+//            book.setPublishPlace(cursor.getString(5));
+//            book.setPublishDate(cursor.getString(6));
+//            book.setNumPages(cursor.getInt(7));
+//            book.setCover(readCover(cursor.getLong(8)));
         }
 
         db.close();
         return book;
     }
 
+    private void cursorTScansToBook(Cursor cursor, Book book) {
+        book.setScanId(cursor.getInt(0));
+        book.setBarcode(cursor.getString(1));
+        book.setBarcodePicture(Utilidades.getBitmap(cursor.getBlob(2)));
+        book.setDateCreated(Utilidades.getDateFromString(cursor.getString(3)));
+        book.setDateModified(Utilidades.getDateFromString(cursor.getString(4)));
+        book.setFound(Utilidades.getBooleanFromInteger(cursor.getInt(5)));
+        book.setPrice(cursor.getDouble(6));
+        book.setNotes(cursor.getString(7));
+        book.setLongitud(cursor.getDouble(8));
+        book.setLatitud(cursor.getDouble(9));
+        book.setType(Type.valueOf(cursor.getString(10)));
+        book.setMediaId(cursor.getLong(11));
+    }
+
+    private void cursorTBooksToBook(Cursor cursor, Book book) {
+        book.setIsbn(cursor.getString(1));
+        book.setTitle(cursor.getString(2));
+        book.setAuthor(cursor.getString(3));
+        book.setPublisher(cursor.getString(4));
+        book.setPublishPlace(cursor.getString(5));
+        book.setPublishDate(cursor.getString(6));
+        book.setNumPages(cursor.getInt(7));
+        book.setCover(readCover(cursor.getLong(8)));
+    }
 
 
-    public Media updateMedia(Media media){
+    public Media updateMedia(Media media) {
         //Modifica el libro con un id concreto
         SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura. Si la bbdd no existe, la crea
-        db.update(T_BOOKS, book2contentvalues(media), T_BOOKS_FIELDS[0][0] + "=" + media.getMediaId(), null);
+//        db.update(T_BOOKS, book2contentvalues(media), T_BOOKS_FIELDS[0][0] + "=" + media.getMediaId(), null);
         db.close();
         //TODO return?
         return media;
     }
 
-    public Boolean deleteMedia(Long id){
+    public Boolean deleteMedia(Long id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(T_BOOKS, T_BOOKS_FIELDS[0][0] + "=" + id, null);
+        db.delete(T_SCANS, T_SCANS_FIELDS[0][0] + "=" + id, null);
 //        //Mediante rawQuery
 //        Cursor cursor = db.rawQuery("DELETE FROM " + TABLE_NAME + " WHERE " + COL_0_TAG + " ='" + id + "'", null);
         //TODO return?
@@ -312,15 +335,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-
-        public List<Media> getAll(){
+    public List<Media> getAll() {
         SQLiteDatabase db = this.getWritableDatabase();
 
         //Mediante rawQuery
-        Cursor cursor = db.rawQuery("SELECT * FROM " + T_SCANS + " ORDER BY " + T_BOOKS_FIELDS[1][0] + " ASC", null);
-        //TODO Pedir solo los campos basicos. pero afecta a cursor 2 book
-
-            //2 cosnultas.
+        Cursor cursor = db.rawQuery("SELECT " + T_SCANS_FIELDS[0][0] + " FROM " + T_SCANS + " ORDER BY " + T_SCANS_FIELDS[4][0] + " ASC", null);
 
         /*
         //Mediante query
@@ -337,34 +356,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         */
 
         //Convierto el cursor de la tabla lecturas a una List de Media
-        List<Book> books = new ArrayList<>();
+        List<Media> medias = new ArrayList<>();
 
         //Verifico que el cursor no esté vacio
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
-            Book media = new Book();
-            media.setMediaId(cursor.getInt(0));
-            media.setDateCreated(Utilidades.getDateFromString(cursor.getString(1)));
-            media.setTitle(cursor.getString(2));
-            media.setAuthor(cursor.getString(3));
-            media.setIsbn(cursor.getString(4));
-            media.setPublisher(cursor.getString(5));
-            media.setPublishDate(cursor.getString(6));
-            media.setPrice(cursor.getDouble(7));
-            media.setLongitud(cursor.getDouble(8));
-            media.setLatitud(cursor.getDouble(9));
-            media.setPublishPlace(cursor.getString(10));
-            media.setNumPages(cursor.getInt(11));
-            media.getCover().setLink(cursor.getString(12));
-            media.setFound(Utilidades.getBooleanFromInteger(cursor.getInt(13)));
-            media.setNotes(cursor.getString(14));
-            media.setDateModified(Utilidades.getDateFromString(cursor.getString(15)));
-            books.add(media);
+            while (cursor.moveToNext()) {
+                Media media = readMedia(cursor.getLong(0));
+                medias.add(media);
+            }
         }
         cursor.close();
-        return books;
+        return medias;
     }
-
 
 
 //***************************************************************************************

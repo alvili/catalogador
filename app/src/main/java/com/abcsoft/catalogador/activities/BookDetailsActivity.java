@@ -59,7 +59,10 @@ public class BookDetailsActivity extends AppCompatActivity {
         scansServices = new MediaServicesSQLite(getApplicationContext());
 
         //Recogemos los datos enviados por el intent
-        book.importFromBundle(getIntent().getExtras()); //Los campos no editables toman su valor aquí
+        Bundle b = getIntent().getExtras();
+
+//        book.importFromBundle(getIntent().getExtras()); //Los campos no editables toman su valor aquí
+        book.importFromBundle(b); //Los campos no editables toman su valor aquí
 
         //Transfiero los datos a los campos
         scanToForm(getIntent().getExtras().getString("ORIGIN"));

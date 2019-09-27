@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">catalogador</string>
     <string name="catalogo">BROWSE</string>
-    <string name="scan">NEW SCAN</string>
+    <string name="scan">SCAN BOOK</string>
     <string name="sync">SYNC DATABASE</string>
     <string name="create">SAVE NEW</string>
     <string name="title">Title:</string>
@@ -16,4 +16,5 @@
     <string name="notfound">NOT FOUND</string>
     <string name="update">UPDATE</string>
     <string name="alreadyscanned">ALREADY SCANNED</string>
+    <string name="ok">OK</string>
 </resources>

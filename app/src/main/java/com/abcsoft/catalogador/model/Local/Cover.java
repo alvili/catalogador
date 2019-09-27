@@ -30,7 +30,7 @@ public class Cover {
     public Cover() {
         this.coverId=-1;
         this.link="";
-        this.image=null;
+        this.image=Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
     }
 
     public Cover(long id, String link, Bitmap image) {

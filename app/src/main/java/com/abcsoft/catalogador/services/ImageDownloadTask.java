@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.abcsoft.catalogador.model.Local.Media;
 import com.abcsoft.catalogador.model.Local.Scan;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ import java.net.URL;
 public class ImageDownloadTask extends AsyncTask<String, Void, Bitmap> {
 
     private ImageView imageView; //TODO Evitar el leak
-    private Scan scan;
+    private Media media;
     private InputStream in;
     long inTime;
     long completeTime;
@@ -26,9 +27,9 @@ public class ImageDownloadTask extends AsyncTask<String, Void, Bitmap> {
     public ImageDownloadTask() {
     }
 
-    public ImageDownloadTask(Scan scan, ImageView imageView) {
+    public ImageDownloadTask(Media media, ImageView imageView) {
         this.imageView = imageView;
-        this.scan = scan;
+        this.media = media;
     }
 
     @Override
@@ -64,7 +65,7 @@ public class ImageDownloadTask extends AsyncTask<String, Void, Bitmap> {
     protected void onPostExecute(Bitmap bitmap) {
         completeTime = System.currentTimeMillis() - inTime;
         imageView.setImageBitmap(bitmap);
-        scan.getBook().getCover().setImage(bitmap);
+        media.getCover().setImage(bitmap);
         Log.d("***", "Duration for decode the Full Size Bitmap is " + completeTime);
     }
 }

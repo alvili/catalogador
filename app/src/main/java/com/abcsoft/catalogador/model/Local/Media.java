@@ -14,6 +14,7 @@ public class Media extends Scan {
     private Type type;
 
     public void importFromBundle(Bundle b) {
+        super.importFromBundle(b);
         //Si el bundle no es null recupero los datos
         if (b != null) {
             this.setMediaId(b.getLong("mediaId"));
