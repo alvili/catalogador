@@ -72,20 +72,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     public DatabaseHelper(Context context) {
-        super(context, DATABASE_NAME, null, 2);
+        super(context, DATABASE_NAME, null, 4);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         //Crea las tablas vacias
         StringBuilder strSQL = new StringBuilder();
-
+        strSQL.setLength(0);
         strSQL.append(sqlCreateTable(T_SCANS, T_SCANS_FIELDS));
         db.execSQL(strSQL.toString());
+        strSQL.setLength(0);
         strSQL.append(sqlCreateTable(T_BOOKS, T_BOOKS_FIELDS));
         db.execSQL(strSQL.toString());
+        strSQL.setLength(0);
         strSQL.append(sqlCreateTable(T_COVERS, T_COVERS_FIELDS));
         db.execSQL(strSQL.toString());
+//        strSQL.setLength(0);
 //        strSQL.append(sqlCreateTable(T_BOOKS_COVERS, T_BOOKS_COVERS_FIELDS, T_BOOKS_COVERS_KEYS));
 //        db.execSQL(strSQL.toString());
     }
@@ -94,13 +97,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         //Elimina las tablas actuales. Adios a los datos
         StringBuilder strSQL = new StringBuilder();
-
+        strSQL.setLength(0);
         strSQL.append(sqlDropTable(T_SCANS));
         db.execSQL(strSQL.toString());
+        strSQL.setLength(0);
         strSQL.append(sqlDropTable(T_BOOKS));
         db.execSQL(strSQL.toString());
+        strSQL.setLength(0);
         strSQL.append(sqlDropTable(T_COVERS));
         db.execSQL(strSQL.toString());
+//        strSQL.setLength(0);
 //        strSQL.append(sqlDropTable(T_BOOKS_COVERS));
 //        db.execSQL(strSQL.toString());
         onCreate(db); //Reconstruye las tablas desde cero
@@ -120,16 +126,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return coverID;
     }
 
-    //Inserta la caratula a la bbdd
+    //Inserta la cubierta a la bbdd
     private long insertCover(Cover cover) {
         SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura.
-        ContentValues cv = new ContentValues();
-        cv.put(T_COVERS_FIELDS[1][0], cover.getLink());
-        cv.put(T_COVERS_FIELDS[2][0], Utilidades.getBytes(cover.getImage()));
+        long id = getCoverID(cover.getLink());
+        //Verifico si ya existe
+        if (id < 0) {
+            ContentValues cv = new ContentValues();
+            cv.put(T_COVERS_FIELDS[1][0], cover.getLink());
+            cv.put(T_COVERS_FIELDS[2][0], Utilidades.getBytes(cover.getImage()));
 
-        long id = db.insert(T_COVERS, null, cv);
-//        db.close();
-        cover.setCoverId(id);
+            id = db.insert(T_COVERS, null, cv);
+            db.close();
+            cover.setCoverId(id);
+        }
         return id;
     }
 
@@ -145,44 +155,72 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             cover.setLink(cursor.getString(1));
             cover.setImage(Utilidades.getBitmap(cursor.getBlob(2)));
         }
-//        db.close();
+        db.close();
         return cover;
     }
 
+    private long getBookID(String isbn) {
+        long bookID = -1;
+        SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura.
+        String sqlQuery = "SELECT " + T_BOOKS_FIELDS[0][0] + " FROM " + T_BOOKS + " WHERE " + T_BOOKS_FIELDS[0][1] + " = \"" + isbn + "\"";
+        Cursor c = db.rawQuery(sqlQuery, null);
+        if (c != null && c.getCount() > 0) {
+            c.moveToFirst();
+            bookID = c.getLong(0);
+        }
+        c.close();
+        db.close();
+        return bookID;
+    }
 
     private Long insertBook(Book book) {
         SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura. Si la bbdd no existe, la crea
+        //Verifico si existe
+        long id = getBookID(book.getIsbn());
+        if (id < 0) {
+           //Inserto libro a la bbdd si ya existe devuelve id
+            ContentValues cv = new ContentValues();
+            cv.put(T_BOOKS_FIELDS[1][0], book.getIsbn());
+            cv.put(T_BOOKS_FIELDS[2][0], book.getTitle());
+            cv.put(T_BOOKS_FIELDS[3][0], book.getAuthor());
+            cv.put(T_BOOKS_FIELDS[4][0], book.getPublisher());
+            cv.put(T_BOOKS_FIELDS[5][0], book.getPublishPlace());
+            cv.put(T_BOOKS_FIELDS[6][0], book.getPublishDate());
+            cv.put(T_BOOKS_FIELDS[7][0], book.getNumPages());
+            cv.put(T_BOOKS_FIELDS[8][0], insertCover(book.getCover())); //Devuelve id de la carátula
 
-        //Inserto libro a la bbdd si ya existe devuelve id
-        ContentValues cv = new ContentValues();
-        cv.put(T_BOOKS_FIELDS[1][0], book.getIsbn());
-        cv.put(T_BOOKS_FIELDS[2][0], book.getTitle());
-        cv.put(T_BOOKS_FIELDS[3][0], book.getAuthor());
-        cv.put(T_BOOKS_FIELDS[4][0], book.getPublisher());
-        cv.put(T_BOOKS_FIELDS[5][0], book.getPublishPlace());
-        cv.put(T_BOOKS_FIELDS[6][0], book.getPublishDate());
-        cv.put(T_BOOKS_FIELDS[7][0], book.getNumPages());
-        cv.put(T_BOOKS_FIELDS[8][0], insertCover(book.getCover())); //Devuelve id de la carátula
-
-        long id = db.insert(T_BOOKS, null, cv);
-//        db.close();
-        book.setMediaId(id);
+            id = db.insert(T_BOOKS, null, cv);
+            db.close();
+            book.setMediaId(id);
+        }
         return id;
     }
 
-    public Media createMedia(Media media) {
-        //Diferencio segun tipo de media
-        switch (media.getType()) {
-            case BOOK:
-                return createBook((Book) media);
-            case CD:
-                return null;
-            default:
-                return null;
+    //Recupera un libro a partir de su ID en la tabla books
+    public Book readBook(Long id, Book book) {
+        SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura. Si la bbdd no existe, la crea
+        //Mediante rawQuery
+        Cursor cursor = db.rawQuery("SELECT * FROM " + T_BOOKS + " WHERE " + T_BOOKS_FIELDS[0][0] + "=" + book.getMediaId(), null);
+
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            cursorTBooksToBook(cursor, book);
+//            book.setIsbn(cursor.getString(1));
+//            book.setTitle(cursor.getString(2));
+//            book.setAuthor(cursor.getString(3));
+//            book.setPublisher(cursor.getString(4));
+//            book.setPublishPlace(cursor.getString(5));
+//            book.setPublishDate(cursor.getString(6));
+//            book.setNumPages(cursor.getInt(7));
+//            book.setCover(readCover(cursor.getLong(8)));
         }
+
+        db.close();
+        return book;
     }
 
-    public Book createBook(Book book) {
+
+    public Book insertScan(Media book) {
         //Necesito una referencia de acceso a la bbdd
         SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura. Si la bbdd no existe, la crea
 
@@ -200,7 +238,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv.put(T_SCANS_FIELDS[8][0], book.getLongitud());
         cv.put(T_SCANS_FIELDS[9][0], book.getLatitud());
         cv.put(T_SCANS_FIELDS[10][0], book.getType().toString());
-        cv.put(T_SCANS_FIELDS[11][0], insertBook(book)); //Devuelve id del libro
+        cv.put(T_SCANS_FIELDS[11][0], insertBook((Book) book )); //Devuelve id del libro
+        switch (book.getType()) {
+            case BOOK:
+                cv.put(T_SCANS_FIELDS[11][0], insertBook((Book) book )); //Devuelve id del libro
+                break;
+            case CD:
+                break;
+            default:
+                break;
+        }
 
         long id = db.insert(T_SCANS, null, cv);
         //db.insert devulve un long correspondiente al número de registros. Equivale al codigo
@@ -220,33 +267,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public Media readMedia(Long id) {
-        //Recupera un libro a partir del id
-        SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura. Si la bbdd no existe, la crea
-        //Mediante rawQuery
-        Cursor cursor = db.rawQuery("SELECT " + T_SCANS_FIELDS[10][0] + " FROM " + T_SCANS + " WHERE " + T_SCANS_FIELDS[0][0] + "=" + id, null);
-        if (cursor != null && cursor.getCount() > 0) {
-            cursor.moveToFirst();
-            Type MediaType = Type.valueOf(cursor.getString(0));
 
-            switch (MediaType) {
-                case BOOK:
-                    return (Media) readBook(id);
-                case CD:
-                    return null;
-                default:
-                    return null;
-            }
-        } else {
-            return null;
-        }
-    }
-
-
-    //Devuelve un libro a partir del scanId
-    public Book readBook(Long id) {
+    //TODO ARREGLAR ESTO
+    //Devuelve un media a partir del scanId
+    public Media readScan(Long id) {
         //Recupera un libro a partir del id del scan
-        Book book = new Book();
+        Media book = new Book();
         SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura. Si la bbdd no existe, la crea
         //Mediante rawQuery
         Cursor cursor = db.rawQuery("SELECT * FROM " + T_SCANS + " WHERE " + T_SCANS_FIELDS[0][0] + "=" + id, null);
@@ -268,24 +294,55 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //            book.setMediaId(cursor.getLong(11));
         }
 
-        cursor = db.rawQuery("SELECT * FROM " + T_BOOKS + " WHERE " + T_BOOKS_FIELDS[0][0] + "=" + book.getMediaId(), null);
+        readBook(book.getMediaId(),book);
 
-        if (cursor != null && cursor.getCount() > 0) {
-            cursor.moveToFirst();
-            cursorTBooksToBook(cursor, book);
-//            book.setIsbn(cursor.getString(1));
-//            book.setTitle(cursor.getString(2));
-//            book.setAuthor(cursor.getString(3));
-//            book.setPublisher(cursor.getString(4));
-//            book.setPublishPlace(cursor.getString(5));
-//            book.setPublishDate(cursor.getString(6));
-//            book.setNumPages(cursor.getInt(7));
-//            book.setCover(readCover(cursor.getLong(8)));
-        }
-
-        db.close();
         return book;
     }
+
+
+
+    public Media createMedia(Media media) {
+        //Diferencio segun tipo de media
+        return insertScan(media);
+//        switch (media.getType()) {
+//            case BOOK:
+//                return insertScan((Book) media);
+//            case CD:
+//                return null;
+//            default:
+//                return null;
+//        }
+    }
+
+    public Media readMedia(Long id) {
+        //Miro el tipo de media
+        SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura. Si la bbdd no existe, la crea
+        //Mediante rawQuery
+        Cursor cursor = db.rawQuery("SELECT " + T_SCANS_FIELDS[10][0] + "," + T_SCANS_FIELDS[11][0] + " FROM " + T_SCANS + " WHERE " + T_SCANS_FIELDS[0][0] + "=" + id, null);
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            Type MediaType = Type.valueOf(cursor.getString(0));
+            Long MediaID = cursor.getLong(1);
+
+            switch (MediaType) {
+                case BOOK:
+                    return (Media) readBook(MediaID);
+                case CD:
+                    return null;
+                default:
+                    return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+
+
+
+
+
+
 
     private void cursorTScansToBook(Cursor cursor, Book book) {
         book.setScanId(cursor.getInt(0));
@@ -361,8 +418,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //Verifico que el cursor no esté vacio
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
+            Media media = readMedia(cursor.getLong(0));
+            medias.add(media);
             while (cursor.moveToNext()) {
-                Media media = readMedia(cursor.getLong(0));
+                media = readMedia(cursor.getLong(0));
                 medias.add(media);
             }
         }
@@ -376,95 +435,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //************************          Métodos privados           **************************
 //************************                                     **************************
 //***************************************************************************************
-
-
-//    //Conveirte los tipos de java a sqlite y transfiere los campos de book a un contenedor de valores
-//    private ContentValues book2contentvalues(Scan scan){
-//        //Creo un contenedor de valores y transformo los campos de book a los tipos de sqlite
-//        ContentValues contentValues = new ContentValues();
-//        contentValues.put(T_BOOKS_FIELDS[1][0], Utilidades.getStringFromDate(scan.getDateCreated()));
-//        contentValues.put(T_BOOKS_FIELDS[2][0], scan.getBook().getTitle());
-//        contentValues.put(T_BOOKS_FIELDS[3][0], scan.getBook().getAuthor());
-//        contentValues.put(T_BOOKS_FIELDS[4][0], scan.getBook().getIsbn());
-//        contentValues.put(T_BOOKS_FIELDS[5][0], scan.getBook().getPublisher());
-//        contentValues.put(T_BOOKS_FIELDS[6][0], scan.getBook().getPublishDate());
-//        contentValues.put(T_BOOKS_FIELDS[7][0], scan.getPrice());
-//        contentValues.put(T_BOOKS_FIELDS[8][0], scan.getLongitud());
-//        contentValues.put(T_BOOKS_FIELDS[9][0], scan.getLatitud());
-//        contentValues.put(T_BOOKS_FIELDS[10][0], scan.getBook().getPublishPlace());
-//        contentValues.put(T_BOOKS_FIELDS[11][0], scan.getBook().getNumPages());
-//        contentValues.put(T_BOOKS_FIELDS[12][0], scan.getBook().getCover().getLink());
-//        contentValues.put(T_BOOKS_FIELDS[13][0], Utilidades.getIntegerFromBoolean(scan.getFound()));
-//        contentValues.put(T_BOOKS_FIELDS[14][0], scan.getNotes());
-//        contentValues.put(T_BOOKS_FIELDS[15][0], Utilidades.getStringFromDate(scan.getDateModified()));
-////        insertImage(book.getCoverLink()); //guardar la id que devuelve
-//        return contentValues;
-//    }
-//
-//    //Convierte un cursor de la tabla lecturas a una List de Books
-//    private Media cursor2MediaDetails(Cursor cursor){
-//        Scan scan = new Scan(); //Añado un libro nuevo en cada iteración
-//        scan.setId(cursor.getInt(0));
-//        scan.setDateCreated(Utilidades.getDateFromString(cursor.getString(1)));
-//        scan.getBook().setTitle(cursor.getString(2));
-//        scan.getBook().setAuthor(cursor.getString(3));
-//        scan.getBook().setIsbn(cursor.getString(4));
-//        scan.getBook().setPublisher(cursor.getString(5));
-//        scan.getBook().setPublishDate(cursor.getString(6));
-//        scan.setPrice(cursor.getDouble(7));
-//        scan.setLongitud(cursor.getDouble(8));
-//        scan.setLatitud(cursor.getDouble(9));
-//        scan.getBook().setPublishPlace(cursor.getString(10));
-//        scan.getBook().setNumPages(cursor.getInt(11));
-//        scan.getBook().getCover().setLink(cursor.getString(12));
-//        scan.setFound(Utilidades.getBooleanFromInteger(cursor.getInt(13)));
-//        scan.setNotes(cursor.getString(14));
-//        scan.setDateModified(Utilidades.getDateFromString(cursor.getString(15)));
-//        return scan;
-//    }
-//
-//    private Media cursorToMedia(Cursor cursor){
-//        Media media = new Media();
-//        //Verifico que el cursor no esté vacio
-//        if (cursor != null && cursor.getCount() > 0) {
-//            cursor.moveToFirst();
-//            media = cursor2MediaDetails(cursor);
-//        }
-//        cursor.close();
-//        return media;
-//    }
-//
-//    //Convierte un cursor de la tabla lecturas a una List de Books
-//    private List<Scan> cursorToScanDetailsList(Cursor cursor){
-//        List<Scan> scans = new ArrayList<>();
-////        Book book;
-//
-//        //Verifico que el cursor no esté vacio
-//        if (cursor != null && cursor.getCount() > 0) {
-//            cursor.moveToFirst();
-//            while (cursor.moveToNext()) {
-////                book = new Book(); //Añado un libro nuevo en cada iteración
-////                book.setId(cursor.getInt(0));
-////                book.setDateCreation(Utilidades.getDateFromString(cursor.getString(1)));
-////                book.setTitle(cursor.getString(2));
-////                book.setAuthor(cursor.getString(3));
-////                book.setIsbn(cursor.getString(4));
-////                book.setPublisher(cursor.getString(5));
-////                book.setPublishDate(cursor.getString(6));
-////                book.setPrice(cursor.getDouble(7));
-////                book.setLongitud(cursor.getDouble(8));
-////                book.setLatitud(cursor.getDouble(9));
-////                book.setPublishPlace(cursor.getString(10));
-////                book.setNumPages(cursor.getInt(11));
-////                book.setCoverLink(cursor.getString(12));
-////                book.setFound(Utilidades.getBooleanFromInteger(cursor.getInt(13)));
-//                scans.add(cursor2ScanDetails(cursor));
-//            }
-//        }
-//        cursor.close();
-//        return scans;
-//    }
-//
 
 
     private String sqlCreateTable(String table_name, String[][] table_fields){
