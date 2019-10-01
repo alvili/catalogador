@@ -23,7 +23,7 @@ public class MediaServicesSQLite implements MediaServices {
 
     @Override
     public Media read(Long id) {
-        return myDB.readMedia(id);
+        return myDB.readScan(id);
     }
 
     @Override

@@ -50,8 +50,8 @@ public class ScannerActivity extends AppCompatActivity {
         //Recupero la imagen
         Bitmap barcodePicture = Utilidades.getBitmap(getIntent().getExtras().getByteArray("barcodePicture"));
 
-//        code.setText("9788408085614");
-        code.setText("9781101965481");
+        code.setText("9788408085614");
+//        code.setText("9781101965481");
 //        code.setText("8439596065");
 
         //Creo un nuevo libro
