@@ -94,7 +94,7 @@ public class BookDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //borra el elemento de la bbdd local
-                scansServices.delete(book.getMediaId()); //TODO boorar scan o borrar libro?
+                scansServices.delete(book.getScanId()); //TODO boorar scan o borrar libro?
 
                 //Vuelvo a la lista
                 gotoList();

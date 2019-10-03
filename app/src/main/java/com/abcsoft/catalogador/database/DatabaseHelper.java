@@ -13,6 +13,7 @@ import com.abcsoft.catalogador.model.Local.Type;
 import com.abcsoft.catalogador.services.Utilidades;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 //implementa las funcionalidades declaradas en el servicio BooksService a nivel sql
@@ -317,15 +318,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Media updateMedia(Media media) {
         //Modifica el libro con un id concreto
         SQLiteDatabase db = this.getWritableDatabase(); //Devuelve una referencia a la bbdd en modo escritura. Si la bbdd no existe, la crea
-//        db.update(T_BOOKS, book2contentvalues(media), T_BOOKS_FIELDS[0][0] + "=" + media.getMediaId(), null);
+        ContentValues cv = new ContentValues();
+        cv.put(T_SCANS_FIELDS[1][0], media.getBarcode());
+        cv.put(T_SCANS_FIELDS[2][0], Utilidades.getBytes(media.getBarcodePicture()));
+        cv.put(T_SCANS_FIELDS[3][0], Utilidades.getStringFromDate(media.getDateCreated()));
+        cv.put(T_SCANS_FIELDS[4][0], Utilidades.getStringFromDate(new Date()));
+        cv.put(T_SCANS_FIELDS[5][0], Utilidades.getIntegerFromBoolean(media.getFound()));
+        cv.put(T_SCANS_FIELDS[6][0], media.getPrice());
+        cv.put(T_SCANS_FIELDS[7][0], media.getNotes());
+        cv.put(T_SCANS_FIELDS[8][0], media.getLongitud());
+        cv.put(T_SCANS_FIELDS[9][0], media.getLatitud());
+        cv.put(T_SCANS_FIELDS[10][0], media.getType().toString());
+        switch (media.getType()) {
+            case BOOK:
+                cv.put(T_SCANS_FIELDS[11][0], insertBook((Book) media )); //Devuelve id del libro
+                break;
+            case CD:
+                break;
+            default:
+                break;
+        }
+        db.update(T_SCANS, cv, T_SCANS_FIELDS[0][0] + "=" + media.getScanId(), null);
 //        db.close();
         //TODO return?
         return media;
     }
 
     public Boolean deleteMedia(Long id) {
-
-        //TODO id tiene que ser la de la bbdd, no la posición de la lista
         SQLiteDatabase db = this.getWritableDatabase();
         //Solo borro los datos de scan. El libro i la cubierta se queda en la bbdd
         long res = db.delete(T_SCANS, T_SCANS_FIELDS[0][0] + "=" + id, null);
